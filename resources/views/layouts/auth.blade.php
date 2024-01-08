@@ -10,7 +10,7 @@
     <meta name="keyword" content="{{ setting('meta_keyword') }}">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title }} - {{ config('app.name', 'Laravel') }}</title>
+    <title>{{ $title }} - {{ config('app.name', 'Remindex') }}</title>
 
     <!-- Fonts -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap">

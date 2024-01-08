@@ -51,6 +51,51 @@ class GenerateMenus
                     'permission' => ['edit_settings', 'view_backups', 'view_users', 'view_roles', 'view_logs'],
                 ]);
 
+            // Master Data
+            $masterData = $menu->add('<i class="nav-icon fa fa-archive"></i> Master Data', [
+                'class' => 'nav-group',
+            ])
+                ->data([
+                    'order' => 104,
+                    'activematches' => [
+                        'admin/users*',
+                        'admin/roles*',
+                    ],
+                    'permission' => ['view_users', 'view_roles'],
+                ]);
+            $masterData->link->attr([
+                'class' => 'nav-link nav-group-toggle',
+                'href' => '#',
+            ]);
+
+            // Submenu: Department
+            $masterData->add('<i class="nav-icon fa-regular fa-sun"></i> '.__('Departments'), [
+                'route' => 'backend.departments.index',
+                'class' => 'nav-item',
+            ])
+            ->data([
+                'order'         => 77,
+                'activematches' => ['admin/departments*'],
+                'permission'    => ['view_departments'],
+            ])
+            ->link->attr([
+                'class' => 'nav-link',
+            ]);
+
+            // Submenu: Document Type
+            $masterData->add('<i class="nav-icon fa-solid fa-sitemap"></i> '.__('Document Types'), [
+                'route' => 'backend.documenttypes.index',
+                'class' => 'nav-item',
+            ])
+            ->data([
+                'order'         => 77,
+                'activematches' => ['admin/documenttypes*'],
+                'permission'    => ['view_documenttypes'],
+            ])
+            ->link->attr([
+                'class' => 'nav-link',
+            ]);
+
             // Settings
             $menu->add('<i class="nav-icon fas fa-cogs"></i> Settings', [
                 'route' => 'backend.settings',
@@ -66,18 +111,18 @@ class GenerateMenus
                 ]);
 
             // Backup
-            $menu->add('<i class="nav-icon fas fa-archive"></i> Backups', [
-                'route' => 'backend.backups.index',
-                'class' => 'nav-item',
-            ])
-                ->data([
-                    'order' => 103,
-                    'activematches' => 'admin/backups*',
-                    'permission' => ['view_backups'],
-                ])
-                ->link->attr([
-                    'class' => 'nav-link',
-                ]);
+            // $menu->add('<i class="nav-icon fas fa-archive"></i> Backups', [
+            //     'route' => 'backend.backups.index',
+            //     'class' => 'nav-item',
+            // ])
+            //     ->data([
+            //         'order' => 103,
+            //         'activematches' => 'admin/backups*',
+            //         'permission' => ['view_backups'],
+            //     ])
+            //     ->link->attr([
+            //         'class' => 'nav-link',
+            //     ]);
 
             // Access Control Dropdown
             $accessControl = $menu->add('<i class="nav-icon fa-solid fa-user-gear"></i> Access Control', [

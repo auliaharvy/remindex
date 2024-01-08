@@ -7,5 +7,5 @@
             @endif
         </small>
     </div>
-    <div class="ms-auto"> <small>{!! setting('footer_text') !!}</small> </div>
+    <!-- <div class="ms-auto"> <small>{!! setting('footer_text') !!}</small> </div> -->
 </footer>

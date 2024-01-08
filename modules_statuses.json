@@ -2,5 +2,10 @@
     "Article": true,
     "Tag": true,
     "Comment": true,
-    "Category": true
+    "Category": true,
+    "Document": true,
+    "Department": true,
+    "Location": true,
+    "DocumentType": true,
+    "Organization": true
 }

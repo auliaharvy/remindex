@@ -23,7 +23,7 @@
     @vite(['resources/js/app-frontend.js'])
 
     @livewireStyles
-    
+
     @stack('after-styles')
 
     <x-google-analytics />
