@@ -49,13 +49,10 @@
                     <thead>
                         <tr>
                             <th>
-                                #
+                                @lang("documenttype::text.code")
                             </th>
                             <th>
                                 @lang("documenttype::text.name")
-                            </th>
-                            <th>
-                                @lang("documenttype::text.slug")
                             </th>
                             <th>
                                 @lang("documenttype::text.updated_at")

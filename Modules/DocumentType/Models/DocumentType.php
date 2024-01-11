@@ -5,11 +5,14 @@ namespace Modules\DocumentType\Models;
 use App\Models\BaseModel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Support\Str;
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 class DocumentType extends BaseModel
 {
     use HasFactory;
     use SoftDeletes;
+    use HasUuids;
 
     protected $table = 'document_types';
 

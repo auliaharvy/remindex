@@ -49,7 +49,7 @@
                     <thead>
                         <tr>
                             <th>
-                                #
+                                @lang("documenttype::text.code")
                             </th>
                             <th>
                                 @lang("documenttype::text.name")
@@ -102,8 +102,8 @@
         responsive: true,
         ajax: '{{ route("backend.$module_name.index_data") }}',
         columns: [{
-                data: 'id',
-                name: 'id'
+                data: 'code',
+                name: 'code'
             },
             {
                 data: 'name',
