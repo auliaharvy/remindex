@@ -2,6 +2,7 @@
 
 return [
 
+    'code' => 'Code',
     'name' => 'Name',
     'slug' => 'Slug',
     'description' => 'Description',

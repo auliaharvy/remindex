@@ -43,19 +43,19 @@
             </x-slot>
         </x-backend.section-header>
 
-        <div class="row mt-4">
-            <div class="col">
+        <!-- <div class="row mt-4">
+            <div class="overflow-x-auto">
                 <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
                     <thead>
                         <tr>
                             <th>
-                                #
+                                @lang("department::text.code")
                             </th>
                             <th>
                                 @lang("department::text.name")
                             </th>
                             <th>
-                                @lang("department::text.slug")
+                                @lang("department::text.description")
                             </th>
                             <th>
                                 @lang("department::text.updated_at")
@@ -73,13 +73,13 @@
                         @foreach($$module_name as $module_name_singular)
                         <tr>
                             <td>
-                                {{ $module_name_singular->id }}
+                                {{ $module_name_singular->code }}
                             </td>
                             <td>
                                 <a href="{{ url("admin/$module_name", $module_name_singular->id) }}">{{ $module_name_singular->name }}</a>
                             </td>
                             <td>
-                                {{ $module_name_singular->slug }}
+                                {{ $module_name_singular->description }}
                             </td>
                             <td>
                                 {{ $module_name_singular->updated_at->diffForHumans() }}
@@ -96,7 +96,7 @@
                     </tbody>
                 </table>
             </div>
-        </div>
+        </div> -->
     </div>
     <div class="card-footer">
         <div class="row">

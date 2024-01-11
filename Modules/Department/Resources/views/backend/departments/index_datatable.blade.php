@@ -44,15 +44,18 @@
         </x-backend.section-header>
 
         <div class="row mt-4">
-            <div class="col">
-                <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
+            <div class="col overflow-x-auto">
+                <table id="datatable" class="table table-bordered table-hover table-responsive">
                     <thead>
                         <tr>
                             <th>
-                                #
+                                @lang("department::text.code")
                             </th>
                             <th>
                                 @lang("department::text.name")
+                            </th>
+                            <th>
+                                @lang("department::text.description")
                             </th>
                             <th>
                                 @lang("department::text.updated_at")
@@ -102,12 +105,16 @@
         responsive: true,
         ajax: '{{ route("backend.$module_name.index_data") }}',
         columns: [{
-                data: 'id',
-                name: 'id'
+                data: 'code',
+                name: 'code'
             },
             {
                 data: 'name',
                 name: 'name'
+            },
+            {
+                data: 'description',
+                name: 'description'
             },
             {
                 data: 'updated_at',
