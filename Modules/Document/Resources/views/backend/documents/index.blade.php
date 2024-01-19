@@ -48,25 +48,30 @@
                 <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
                     <thead>
                         <tr>
-                            <th>
-                                #
+                        <th>
+                              @lang("document::text.nama_dokumen")
                             </th>
                             <th>
-                                @lang("document::text.name")
+                              @lang("document::text.nama_pengguna")
                             </th>
                             <th>
-                                @lang("document::text.slug")
+                                @lang("document::text.kategori")
                             </th>
                             <th>
-                                @lang("document::text.updated_at")
+                                @lang("document::text.tanggal")
                             </th>
                             <th>
-                                @lang("document::text.created_by")
+                              @lang("document::text.bulan")
+                            </th>
+                            <th>
+                              @lang("document::text.tahun")
+                            </th>
+                            <th>
+                              @lang("document::text.status")
                             </th>
                             <th class="text-end">
                                 @lang("document::text.action")
                             </th>
-                        </tr>
                     </thead>
 
                     <tbody>

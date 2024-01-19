@@ -25,8 +25,13 @@ class DocumentFactory extends Factory
     public function definition()
     {
         return [
-            'name'              => substr($this->faker->text(15), 0, -1),
-            'slug'              => '',
+            'id'                => (string) Str::orderedUuid(),
+            'user_id'           => (string) Str::orderedUuid(),
+            'type_id'           => (string) Str::orderedUuid(),
+            'departemnt_id'     => (string) Str::orderedUuid(),
+            'code'              => '',
+            'name'              => '',
+            'location'          => '',
             'description'       => $this->faker->paragraph,
             'status'            => 1,
             'created_at'        => Carbon::now(),

@@ -4,6 +4,11 @@ namespace Modules\Document\Http\Controllers\Backend;
 
 use App\Authorizable;
 use App\Http\Controllers\Backend\BackendBaseController;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+use Illuminate\Support\Str;
+use Yajra\DataTables\DataTables;
 
 class DocumentsController extends BackendBaseController
 {
@@ -27,4 +32,135 @@ class DocumentsController extends BackendBaseController
         $this->module_model = "Modules\Document\Models\Document";
     }
 
+    public function index()
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+
+        $$module_name = $module_model::simplePaginate(15);
+
+        logUserAccess($module_title.' '.$module_action);
+
+        return view(
+            "{$module_path}.{$module_name}.index_datatable",
+            compact('module_title', 'module_name', "{$module_name}", 'module_icon', 'module_name_singular', 'module_action')
+        );
+    }
+
+    /**
+     * Retrieves a list of items based on the search term.
+     *
+     * @param  Request  $request  The HTTP request object.
+     * @return JsonResponse The JSON response containing the list of items.
+     */
+    public function index_list(Request $request)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+
+        $term = trim($request->q);
+
+        if (empty($term)) {
+            return response()->json([]);
+        }
+
+        $query_data = $module_model::where('name', 'LIKE', "%{$term}%")->orWhere('slug', 'LIKE', "%{$term}%")->limit(7)->get();
+
+        $$module_name = [];
+
+        foreach ($query_data as $row) {
+            $$module_name[] = [
+                'id' => $row->id,
+                'text' => $row->name.' (Slug: '.$row->slug.')',
+            ];
+        }
+
+        return response()->json($$module_name);
+    }
+
+    /**
+     * Retrieves the data for the index page of the module.
+     *
+     * @return Illuminate\Http\JsonResponse
+     */
+    public function index_data()
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'List';
+
+        $page_heading = label_case($module_title);
+        $title = $page_heading.' '.label_case($module_action);
+
+        $$module_name = $module_model::select('id', 'user_id', 'code', 'name', 'description','updated_at');
+
+        $data = $$module_name;
+
+        return Datatables::of($$module_name)
+            ->addColumn('action', function ($data) {
+                $module_name = $this->module_name;
+
+                return view('backend.includes.action_column', compact('module_name', 'data'));
+            })
+            ->editColumn('name', '<strong>{{$name}}</strong>')
+            ->editColumn('updated_at', function ($data) {
+                $module_name = $this->module_name;
+
+                $diff = Carbon::now()->diffInHours($data->updated_at);
+
+                if ($diff < 25) {
+                    return $data->updated_at->diffForHumans();
+                }
+
+                return $data->updated_at->isoFormat('llll');
+            })
+            ->rawColumns(['name', 'action'])
+            ->orderColumns(['id'], '-:column $1')
+            ->make(true);
+    }
+     /**
+     * Store a new resource in the database.
+     *
+     * @param  Request  $request  The request object containing the data to be stored.
+     * @return RedirectResponse The response object that redirects to the index page of the module.
+     *
+     * @throws Exception If there is an error during the creation of the resource.
+     */
+    public function store(Request $request)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Store';
+
+        $$module_name_singular = $module_model::create($request->all());
+
+        flash(icon()."New '".Str::singular($module_title)."' Added")->success()->important();
+
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+        return redirect("admin/{$module_name}");
+    }
+    
 }

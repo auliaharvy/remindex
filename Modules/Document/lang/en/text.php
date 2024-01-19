@@ -2,8 +2,14 @@
 
 return [
 
+    'nama_dokumen' => 'Nama Dokumen',
+    'nama_pengguna' => 'Nama Pengguna',
+    'kategori' => 'Kategori',
+    'tanggal' => 'Tanggal',
+    'bulan' => 'Bulan',
+    'tahun' => 'Tahun',
     'name' => 'Name',
-    'slug' => 'Slug',
+    'code' => 'Code',
     'description' => 'Description',
     'status' => 'Status',
     'created_by' => 'Created By',

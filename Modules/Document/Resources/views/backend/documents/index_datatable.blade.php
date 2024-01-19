@@ -49,13 +49,25 @@
                     <thead>
                         <tr>
                             <th>
-                                #
+                              @lang("document::text.nama_dokumen")
                             </th>
                             <th>
-                                @lang("document::text.name")
+                              @lang("document::text.nama_pengguna")
                             </th>
                             <th>
-                                @lang("document::text.updated_at")
+                                @lang("document::text.kategori")
+                            </th>
+                            <th>
+                                @lang("document::text.tanggal")
+                            </th>
+                            <th>
+                              @lang("document::text.bulan")
+                            </th>
+                            <th>
+                              @lang("document::text.tahun")
+                            </th>
+                            <th>
+                              @lang("document::text.status")
                             </th>
                             <th class="text-end">
                                 @lang("document::text.action")
@@ -102,16 +114,28 @@
         responsive: true,
         ajax: '{{ route("backend.$module_name.index_data") }}',
         columns: [{
-                data: 'id',
-                name: 'id'
+                data: 'name_dokumen',
+                name: 'name_dokumen'
             },
             {
-                data: 'name',
-                name: 'name'
+                data: 'name_pengguna',
+                data: 'name_pengguna'
             },
             {
-                data: 'updated_at',
-                name: 'updated_at'
+                data: 'kategori',
+                name: 'kategori'
+            },
+            {
+                data: 'tanggal',
+                name: 'tanggal'
+            },
+            {
+                data: 'bulan',
+                name: 'bulan'
+            },
+            {
+                data: 'tahun',
+                data: 'tahun'
             },
             {
                 data: 'action',
