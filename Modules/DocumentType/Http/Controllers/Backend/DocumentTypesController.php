@@ -134,5 +134,7 @@ class DocumentTypesController extends BackendBaseController
             ->rawColumns(['name', 'action'])
             ->orderColumns(['id'], '-:column $1')
             ->make(true);
+            // ali
+
     }
 }
