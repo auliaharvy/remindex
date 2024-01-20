@@ -29,7 +29,8 @@
 
     </div>
 </div>
-
-@include("backend.includes.dashboard_demo_data")
+@include("backend.includes.dashboard.total_data")
+@include("backend.includes.dashboard.filter")
+@include("backend.includes.dashboard.Kalender_Expiration")
 
 @endsection

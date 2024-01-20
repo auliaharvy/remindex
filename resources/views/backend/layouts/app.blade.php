@@ -50,7 +50,7 @@
         <!-- /Header -->
 
         <div class="body flex-grow-1">
-            <div class="container-lg">
+            <div class="container-lg-2">
 
                 @include('flash::message')
 
