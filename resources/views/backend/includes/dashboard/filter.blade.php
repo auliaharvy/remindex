@@ -6,7 +6,6 @@
                 </div>
                 <div class="fw-semibold">Department</div>
                 </div>
-</div>
                 </a>
             </div>
         </div>
@@ -23,6 +22,26 @@
                 <input type="checkbox">
                 <span class="checkmark"></span>
                 Driver License
+                </label>
+                <label class="container">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+                Vihecle Registration
+                </label>
+                <label class="container">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+                Paspport
+                </label>
+                <label class="container">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+                Driver Contract
+                </label>
+                <label class="container">
+                <input type="checkbox">
+                <span class="checkmark"></span>
+                Insurance
                 </label>
                 </div>
                 </a>
