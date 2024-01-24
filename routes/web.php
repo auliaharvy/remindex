@@ -20,7 +20,18 @@ require __DIR__.'/auth.php';
 // Language Switch
 Route::get('language/{language}', [LanguageController::class, 'switch'])->name('language.switch');
 
-Route::get('dashboard', 'App\Http\Controllers\Frontend\FrontendController@index')->name('dashboard');
+Route::group(['middleware' => ['auth']], function () {
+    /**
+     * Backend Dashboard
+     * Namespaces indicate folder structure.
+     */
+    // Route::get('/', 'BackendController@index')->name('home');
+    // Route::get('dashboard', 'BackendController@index')->name('dashboard');
+    Route::get('dashboard', 'App\Http\Controllers\Backend\BackendController@index')->name('dashboard');
+    Route::get('/', 'App\Http\Controllers\Backend\BackendController@index')->name('index');
+});
+
+// Route::get('dashboard', 'App\Http\Controllers\Backend\BackendController@index')->name('dashboard');
 /*
 *
 * Frontend Routes
@@ -28,7 +39,7 @@ Route::get('dashboard', 'App\Http\Controllers\Frontend\FrontendController@index'
 * --------------------------------------------------------------------
 */
 Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.'], function () {
-    Route::get('/', 'FrontendController@index')->name('index');
+    // Route::get('/', 'FrontendController@index')->name('index');
     Route::get('home', 'FrontendController@index')->name('home');
     Route::get('privacy', 'FrontendController@privacy')->name('privacy');
     Route::get('terms', 'FrontendController@terms')->name('terms');

@@ -5,10 +5,15 @@ namespace Modules\Document\Http\Controllers\Backend;
 use App\Authorizable;
 use App\Http\Controllers\Backend\BackendBaseController;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
+use Modules\Category\Models\Category;
+use Modules\Article\Http\Requests\Backend\PostsRequest;
 use Yajra\DataTables\DataTables;
+
 
 class DocumentsController extends BackendBaseController
 {
@@ -135,15 +140,13 @@ class DocumentsController extends BackendBaseController
             ->orderColumns(['id'], '-:column $1')
             ->make(true);
     }
-     /**
-     * Store a new resource in the database.
+    
+    /**
+     * Show the form for creating a new resource.
      *
-     * @param  Request  $request  The request object containing the data to be stored.
-     * @return RedirectResponse The response object that redirects to the index page of the module.
-     *
-     * @throws Exception If there is an error during the creation of the resource.
+     * @return Response
      */
-    public function store(Request $request)
+    public function create()
     {
         $module_title = $this->module_title;
         $module_name = $this->module_name;
@@ -152,15 +155,48 @@ class DocumentsController extends BackendBaseController
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
 
-        $module_action = 'Store';
+        $module_action = 'Create';
 
-        $$module_name_singular = $module_model::create($request->all());
+        $categories = Category::pluck('name', 'id');
 
-        flash(icon()."New '".Str::singular($module_title)."' Added")->success()->important();
+        Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
 
-        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
-
-        return redirect("admin/{$module_name}");
+        return view(
+            "document::backend.{$module_name}.create",
+            compact('module_title', 'module_name', 'module_path','module_icon', 'module_action', 'module_name_singular', 'categories')
+        );
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    // public function store(PostsRequest $request)
+    // {
+    //     $module_title = $this->module_title;
+    //     $module_name = $this->module_name;
+    //     $module_path = $this->module_path;
+    //     $module_icon = $this->module_icon;
+    //     $module_model = $this->module_model;
+    //     $module_name_singular = Str::singular($module_name);
+
+    //     $module_action = 'Store';
+
+    //     $data = $request->except('tags_list');
+    //     $data['created_by_name'] = auth()->user()->name;
+
+    //     $$module_name_singular = $module_model::create($data);
+    //     $$module_name_singular->tags()->attach($request->input('tags_list'));
+
+    //     event(new PostCreated($$module_name_singular));
+
+    //     Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Added")->important();
+
+    //     Log::info(label_case($module_title.' '.$module_action)." | '".$$module_name_singular->name.'(ID:'.$$module_name_singular->id.") ' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+
+    //     return redirect("admin/{$module_name}");
+    // }
     
 }

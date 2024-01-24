@@ -1,10 +1,9 @@
 <?php
 
 return [
-
     'nama_dokumen' => 'Nama Dokumen',
     'nama_pengguna' => 'Nama Pengguna',
-    'kategori' => 'Kategori',
+    'category_id' => 'Category',
     'tanggal' => 'Tanggal',
     'bulan' => 'Bulan',
     'tahun' => 'Tahun',

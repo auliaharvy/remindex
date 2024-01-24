@@ -13,7 +13,7 @@ $notifications_latest = optional($notifications)->take(5);
             <img class="sidebar-brand-full" src="{{asset('img/backend-logo-square.jpg')}}" height="46" alt="{{ app_name() }}">
         </a>
         <ul class="header-nav d-none d-md-flex">
-            <li class="nav-item"><a class="nav-link" href="{{ route('frontend.index') }}" target="_blank">{{app_name()}}&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('backend.home') }}" target="_blank">{{app_name()}}&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i></a></li>
         </ul>
         <ul class="header-nav ms-auto">
             <li class="nav-item dropdown">
