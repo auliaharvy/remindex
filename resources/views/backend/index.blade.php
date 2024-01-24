@@ -7,29 +7,37 @@
 @endsection
 
 @section('content')
-<div class="card mb-4 ">
-    <div class="card-body">
-
-        <x-backend.section-header>
-            @lang("Welcome to", ['name'=>config('app.name')])
-
-            <x-slot name="subtitle">
-                {{ date_today() }}
-            </x-slot>
-            <x-slot name="toolbar">
-                <button class="btn btn-outline-primary mb-1" type="button" data-toggle="tooltip" data-coreui-placement="top" title="Tooltip">
-                    <i class="fa-solid fa-bullhorn"></i>
-                </button>
-            </x-slot>
-        </x-backend.section-header>
-
-        <!-- Dashboard Content Area -->
-        
-        <!-- / Dashboard Content Area -->
-
+<div class="row">
+    <div class="col-12 col-sm-12 col-lg-2">
+        @include("backend.dashboard.dashboard_filter")
+    </div>
+    <div class="col-12 col-sm-12 col-lg-10">
+        @include("backend.dashboard.dashboard_total")
+        <div class="card mb-10">
+            <div class="card-body row">
+                <h4 class="card-title mb-10">@lang("Dashboard Expiration Forecast")</h4>
+                <!-- Dashboard Content Area -->
+                <div class="card-text ma-10">
+                    @include("backend.dashboard.dashboard_forecast")
+                </div>
+                <!-- / Dashboard Content Area -->
+            </div>
+        </div>
+        <br>
+        <div class="card mt-10">
+            <div class="card-body row">
+                <!-- Dashboard Content Area -->
+                <div class="card-text ma-10">
+                    @include("backend.dashboard.dashboard_calendar")
+                </div>
+                <!-- / Dashboard Content Area -->
+            </div>
+        </div>
+        @include("backend.dashboard.dashboard_calendar")
     </div>
 </div>
 
-@include("backend.includes.dashboard_demo_data")
+
+
 
 @endsection

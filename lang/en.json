@@ -5,6 +5,8 @@
     "The :attribute must contain at least one uppercase and one lowercase letter.": "The :attribute must contain at least one uppercase and one lowercase letter.",
     "The given :attribute has appeared in a data leak. Please choose a different :attribute.": "The given :attribute has appeared in a data leak. Please choose a different :attribute.",
 
+    "Dashboard Expiration Forecast": "Expiration Forecast",
+
     "Welcome to": "Welcome to :name Admin Dashboard.",
     "Dashboard": "Dashboard",
     "Admin Dashboard": "Admin Dashboard",
