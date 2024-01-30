@@ -2,9 +2,24 @@
     <div class="col-12 col-sm-6 mb-6">
         <div class="form-group">
             <?php
-            $field_name = 'category_id';
-            $field_lable = __("$module_name.$field_name");
+            $field_name = 'category';
+            $field_lable = label_case($field_name);
             $field_relation = "category";
+            $field_placeholder = $field_lable;
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-document-type')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-6 mb-6">
+        <div class="form-group">
+            <?php
+            $field_name = 'contact';
+            $field_lable = label_case("Primary Contact");
+            $field_relation = "contact";
             $field_placeholder = $field_lable;
             $required = "required";
             ?>
@@ -28,16 +43,32 @@
     </div>
 </div>
 <div class="row mb-3">
-    <div class="col-12">
+    <div class="col-12 col-sm-6 mb-6">
         <div class="form-group">
             <?php
-            $field_name = 'intro';
-            $field_lable = __("article::$module_name.$field_name");
+            $field_name = 'owner';
+            $field_lable = label_case("Owner");
+            $field_relation = "owner";
             $field_placeholder = $field_lable;
             $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-category')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-6 mb-6">
+        <div class="form-group">
+            <?php
+            $field_name = 'department';
+            $field_lable = label_case("Department");
+            $field_relation = "department";
+            $field_placeholder = $field_lable;
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-departments')->attributes(["$required"]) }}
         </div>
     </div>
 </div>
@@ -45,22 +76,8 @@
     <div class="col-12">
         <div class="form-group">
             <?php
-            $field_name = 'content';
-            $field_lable = __("article::$module_name.$field_name");
-            $field_placeholder = $field_lable;
-            $required = "required";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="form-group">
-            <?php
-            $field_name = 'featured_image';
-            $field_lable = __("article::$module_name.$field_name");
+            $field_name = 'file';
+            $field_lable = __("document::$module_name.$field_name");
             $field_placeholder = $field_lable;
             $required = "required";
             ?>
@@ -176,13 +193,13 @@
             document.querySelector('.select2-container--open .select2-search__field').focus();
         });
 
-        $('.select2-category').select2({
+        $('.select2-document-type').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
             minimumInputLength: 2,
             allowClear: true,
             ajax: {
-                url: '{{route("backend.categories.index_list")}}',
+                url: '{{route("backend.documenttypes.index_list")}}',
                 dataType: 'json',
                 data: function(params) {
                     return {
@@ -205,6 +222,28 @@
             allowClear: true,
             ajax: {
                 url: '{{route("backend.tags.index_list")}}',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            }
+        });
+
+        $('.select2-departments').select2({
+            // theme: "bootstrap4",
+            placeholder: '@lang("Select an option")',
+            minimumInputLength: 2,
+            allowClear: true,
+            ajax: {
+                url: '{{route("backend.departments.index_list")}}',
                 dataType: 'json',
                 data: function(params) {
                     return {

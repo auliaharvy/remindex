@@ -66,6 +66,7 @@ return [
                 'last_name' => 'Last Name',
                 'email' => 'Email',
                 'username' => 'Username',
+                'department' => 'Department',
                 'mobile' => 'Mobile',
                 'gender' => 'Gender',
                 'date_of_birth' => 'Date of Birth',

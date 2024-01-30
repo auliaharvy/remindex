@@ -59,8 +59,8 @@ class NewRegistration extends Notification
 
             return (new MailMessage())
                 ->subject('Thank you for registration!')
-                ->line('Please click the button below to verify your email address.')
-                ->action('Verify Email Address', $verificationUrl)
+                ->line('Please click the button below to verify your il address.')
+                ->action('Verify Email', $verificationUrl)
                 ->line('If you did not create an account, no further action is required.');
         }
 

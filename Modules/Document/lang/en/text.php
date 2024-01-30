@@ -7,6 +7,7 @@ return [
     'tanggal' => 'Tanggal',
     'bulan' => 'Bulan',
     'tahun' => 'Tahun',
+    'file' => 'File',
     'name' => 'Name',
     'code' => 'Code',
     'description' => 'Description',

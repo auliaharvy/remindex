@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
 use Modules\Category\Models\Category;
+use Modules\Department\Models\Department;
 use Modules\Article\Http\Requests\Backend\PostsRequest;
 use Yajra\DataTables\DataTables;
 
@@ -31,7 +32,7 @@ class DocumentsController extends BackendBaseController
         $this->module_path = 'document::backend';
 
         // module icon
-        $this->module_icon = 'fa-regular fa-sun';
+        $this->module_icon = 'fa-regular fa-file';
 
         // module model name, path
         $this->module_model = "Modules\Document\Models\Document";
@@ -158,12 +159,13 @@ class DocumentsController extends BackendBaseController
         $module_action = 'Create';
 
         $categories = Category::pluck('name', 'id');
+        $departments = Department::pluck('name', 'id');
 
         Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
 
         return view(
             "document::backend.{$module_name}.create",
-            compact('module_title', 'module_name', 'module_path','module_icon', 'module_action', 'module_name_singular', 'categories')
+            compact('module_title', 'module_name', 'module_path','module_icon', 'module_action', 'module_name_singular', 'categories', 'departments')
         );
     }
 

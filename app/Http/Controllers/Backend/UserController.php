@@ -219,12 +219,14 @@ class UserController extends Controller
         $request->validate([
             'first_name' => 'required|min:3|max:191',
             'last_name' => 'required|min:3|max:191',
+            'department' => 'required',
             'email' => 'required|email|regex:/(.+)@(.+)\.(.+)/i|max:191|unique:users',
             'password' => 'required|confirmed|min:4',
         ]);
 
         $data_array = $request->except('_token', 'roles', 'permissions', 'password_confirmation');
         $data_array['name'] = $request->first_name.' '.$request->last_name;
+        $data_array['department_id'] = $request->department;
         $data_array['password'] = Hash::make($request->password);
 
         if ($request->confirmed === 1) {

@@ -16,7 +16,8 @@
 <div class="card">
     <div class="card-body">
         <x-backend.section-header>
-            <i class="{{ $module_icon }}"></i> {{ __($module_title) }} <small class="text-muted">{{ __($module_action) }}</small>
+            <i class="{{ $module_icon }}"></i> {{ __($module_title) }} <small class="text-muted">{{ __($module_action)
+                }}</small>
 
             <x-slot name="subtitle">
                 @lang(":module_name Management Dashboard", ['module_name'=>Str::title($module_name)])
@@ -35,63 +36,87 @@
                 {{ csrf_field() }}
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.first_name'))->class('col-sm-2 form-control-label')->for('first_name') }}
+                    {{ html()->label(__('labels.backend.users.fields.first_name'))->class('col-sm-2
+                    form-control-label')->for('first_name') }}
                     <div class="col-sm-10">
                         {{ html()->text('first_name')
-                                ->class('form-control')
-                                ->placeholder(__('labels.backend.users.fields.first_name'))
-                                ->attribute('maxlength', 191)
-                                ->required() }}
+                        ->class('form-control')
+                        ->placeholder(__('labels.backend.users.fields.first_name'))
+                        ->attribute('maxlength', 191)
+                        ->required() }}
                     </div>
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.last_name'))->class('col-sm-2 form-control-label')->for('last_name') }}
+                    {{ html()->label(__('labels.backend.users.fields.last_name'))->class('col-sm-2
+                    form-control-label')->for('last_name') }}
                     <div class="col-sm-10">
                         {{ html()->text('last_name')
-                                ->class('form-control')
-                                ->placeholder(__('labels.backend.users.fields.last_name'))
-                                ->attribute('maxlength', 191)
-                                ->required() }}
+                        ->class('form-control')
+                        ->placeholder(__('labels.backend.users.fields.last_name'))
+                        ->attribute('maxlength', 191)
+                        ->required() }}
                     </div>
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.email'))->class('col-sm-2 form-control-label')->for('email') }}
+                    {{ html()->label(__('labels.backend.users.fields.email'))->class('col-sm-2
+                    form-control-label')->for('email') }}
 
                     <div class="col-sm-10">
                         {{ html()->email('email')
-                                ->class('form-control')
-                                ->placeholder(__('labels.backend.users.fields.email'))
-                                ->attribute('maxlength', 191)
-                                ->required() }}
+                        ->class('form-control')
+                        ->placeholder(__('labels.backend.users.fields.email'))
+                        ->attribute('maxlength', 191)
+                        ->required() }}
                     </div>
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.password'))->class('col-sm-2 form-control-label')->for('password') }}
+                    <?php
+                        $field_name = 'department';
+                        $field_lable = label_case("Department");
+                        $field_relation = "department";
+                        $field_placeholder = $field_lable;
+                        $required = "required";
+                    ?>
+                    {{ html()->label(__('labels.backend.users.fields.department'))->class('col-sm-2
+                    form-control-label')->for('department') }}
+                    <div class="col-sm-10">
+                        {{ html()->select($field_name,
+                        isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name',
+                        'id'):'')->placeholder($field_placeholder)->class('form-control
+                        select2-departments')->attributes(["$required"]) }}
+                    </div>
+                </div>
+
+                <div class="form-group row  mb-3">
+                    {{ html()->label(__('labels.backend.users.fields.password'))->class('col-sm-2
+                    form-control-label')->for('password') }}
 
                     <div class="col-sm-10">
                         {{ html()->password('password')
-                                ->class('form-control')
-                                ->placeholder(__('labels.backend.users.fields.password'))
-                                ->required() }}
+                        ->class('form-control')
+                        ->placeholder(__('labels.backend.users.fields.password'))
+                        ->required() }}
                     </div>
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.password_confirmation'))->class('col-sm-2 form-control-label')->for('password_confirmation') }}
+                    {{ html()->label(__('labels.backend.users.fields.password_confirmation'))->class('col-sm-2
+                    form-control-label')->for('password_confirmation') }}
 
                     <div class="col-sm-10">
                         {{ html()->password('password_confirmation')
-                                ->class('form-control')
-                                ->placeholder(__('labels.backend.users.fields.password_confirmation'))
-                                ->required() }}
+                        ->class('form-control')
+                        ->placeholder(__('labels.backend.users.fields.password_confirmation'))
+                        ->required() }}
                     </div>
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.status'))->class('col-6 col-sm-2 form-control-label')->for('status') }}
+                    {{ html()->label(__('labels.backend.users.fields.status'))->class('col-6 col-sm-2
+                    form-control-label')->for('status') }}
 
                     <div class="col-6 col-sm-10">
                         {{ html()->checkbox('status', true, '1') }} @lang('Active')
@@ -99,7 +124,8 @@
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.confirmed'))->class('col-6 col-sm-2 form-control-label')->for('confirmed') }}
+                    {{ html()->label(__('labels.backend.users.fields.confirmed'))->class('col-6 col-sm-2
+                    form-control-label')->for('confirmed') }}
 
                     <div class="col-6 col-sm-10">
                         {{ html()->checkbox('confirmed', true, '1') }} @lang('Email Confirmed')
@@ -107,7 +133,8 @@
                 </div>
 
                 <div class="form-group row  mb-3">
-                    {{ html()->label(__('labels.backend.users.fields.email_credentials'))->class('col-6 col-sm-2 form-control-label')->for('confirmed') }}
+                    {{ html()->label(__('labels.backend.users.fields.email_credentials'))->class('col-6 col-sm-2
+                    form-control-label')->for('confirmed') }}
 
                     <div class="col-6 col-sm-10">
                         {{ html()->checkbox('email_credentials', true, '1') }} @lang('Email Credentials')
@@ -130,14 +157,19 @@
                                         <div class="card mb-3">
                                             <div class="card-header">
                                                 <div class="checkbox">
-                                                    {{ html()->label(html()->checkbox('roles[]', old('roles') && in_array($role->name, old('roles')) ? true : false, $role->name)->id('role-'.$role->id) . "&nbsp;" . ucwords($role->name). "&nbsp;(".$role->name.")")->for('role-'.$role->id) }}
+                                                    {{ html()->label(html()->checkbox('roles[]', old('roles') &&
+                                                    in_array($role->name, old('roles')) ? true : false,
+                                                    $role->name)->id('role-'.$role->id) . "&nbsp;" .
+                                                    ucwords($role->name).
+                                                    "&nbsp;(".$role->name.")")->for('role-'.$role->id) }}
                                                 </div>
                                             </div>
                                             <div class="card-body">
                                                 @if ($role->id != 1)
                                                 @if ($role->permissions->count())
                                                 @foreach ($role->permissions as $permission)
-                                                <i class="far fa-check-circle mr-1"></i>&nbsp;{{ $permission->name }}&nbsp;
+                                                <i class="far fa-check-circle mr-1"></i>&nbsp;{{ $permission->name
+                                                }}&nbsp;
                                                 @endforeach
                                                 @else
                                                 @lang('None')
@@ -162,7 +194,10 @@
                                         @if ($permissions->count())
                                         @foreach($permissions as $permission)
                                         <div class="checkbox">
-                                            {{ html()->label(html()->checkbox('permissions[]', old('permissions') && in_array($permission->name, old('permissions')) ? true : false, $permission->name)->id('permission-'.$permission->id) . ' ' . $permission->name)->for('permission-'.$permission->id) }}
+                                            {{ html()->label(html()->checkbox('permissions[]', old('permissions') &&
+                                            in_array($permission->name, old('permissions')) ? true : false,
+                                            $permission->name)->id('permission-'.$permission->id) . ' ' .
+                                            $permission->name)->for('permission-'.$permission->id) }}
                                         </div>
                                         @endforeach
                                         @endif
@@ -207,5 +242,41 @@
         </div>
     </div>
 </div>
+
+<x-library.select2 />
+
+@push ('after-scripts')
+<script type="module">
+    $(document).ready(function() {
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+            document.querySelector('.select2-container--open .select2-search__field').focus();
+        });
+
+        $('.select2-departments').select2({
+            // theme: "bootstrap4",
+            placeholder: '@lang("Select an option")',
+            minimumInputLength: 2,
+            allowClear: true,
+            ajax: {
+                url: '{{route("backend.departments.index_list")}}',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data) {
+                    console.log(data);
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            }
+        });
+    });
+</script>
+@endpush
 
 @endsection
