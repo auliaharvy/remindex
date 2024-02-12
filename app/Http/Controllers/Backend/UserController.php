@@ -95,7 +95,7 @@ class UserController extends Controller
 
         $module_action = 'List';
 
-        $$module_name = $module_model::select('id', 'name', 'username', 'email', 'email_verified_at', 'updated_at', 'status');
+        $$module_name = $module_model::select('id', 'name', 'department_name','username', 'email', 'email_verified_at', 'updated_at', 'status');
 
         $data = $$module_name;
 

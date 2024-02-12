@@ -4,6 +4,9 @@ namespace App\Notifications;
 
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Queue\SerializesModels;
+use Illuminate\Bus\Queueable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Lang;
@@ -12,8 +15,17 @@ use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
 use Spatie\IcalendarGenerator\Properties\TextProperty;
 
-class VerifyEmail extends Notification
+class NewUserDocumentCreated extends Notification
 {
+    public $document;
+
+    public function __construct($document, $document_expired)
+    {
+        $this->document = $document;
+        $this->document_expired = $document_expired;
+    }
+
+
     /**
      * The callback that should be used to build the mail message.
      *
@@ -40,29 +52,33 @@ class VerifyEmail extends Notification
      */
     public function toMail($notifiable)
     {
-        $verificationUrl = $this->verificationUrl($notifiable);
+        // $verificationUrl = $this->verificationUrl($notifiable);
 
+        // $user = User::where('id', '=', $validatedData['owner'])->first();
+        $url = route('backend.documents.show', $this->document->id);
         if (static::$toMailCallback) {
-            return call_user_func(static::$toMailCallback, $notifiable, $verificationUrl);
+            return call_user_func(static::$toMailCallback, $notifiable, $url);
         }
 
         $calendar = Calendar::create()
-        ->productIdentifier('Remindex Notifier')
+        ->productIdentifier('New Document Notification')
         ->event(function (Event $event) {
-            $event->name("New Document Created")
-                ->startsAt(Carbon::parse("2024-01-31 08:00:00"))
-                ->endsAt(Carbon::parse("2024-01-31 17:00:00"))
-                ->fullDay()
-                ->address('Online - Google Meet');
+            $event->name($this->document->name)
+                ->startsAt(Carbon::parse($this->document_expired->schedule_timestamp))
+                ->endsAt(Carbon::parse($this->document_expired->schedule_timestamp))
+                ->address($this->document->location)
+                ->organizer('remindex@scjp.co.id', 'Remindex');
         });
         $calendar->appendProperty(TextProperty::create('METHOD', 'REQUEST'));  
 
+        // $url = route('backend.documents.show', $this->document->id);
         return (new MailMessage())
-            ->subject("nEW eMAIL")
-            ->markdown('mail.invite.created')
-            ->line("Lang::get('Please click the button below to verifys.')")
-            ->action(Lang::get('Verify Email'), $verificationUrl)
-            ->line(Lang::get('If you did not create an account, no further action is required.'))
+            ->subject('New Document Created: ' . $this->document->name)
+            ->line('A new document has been created:')
+            ->line('Document Name: ' . $this->document->name)
+            ->line('Description: ' . $this->document->description)
+            ->line('Created by: ' . $this->document->user->name) // Assuming a 'user' relationship on document
+            ->action('View Document', $url)
             ->attachData($calendar->get(), 'invite.ics', [
                 'mime' => 'text/calendar; charset=UTF-8; method=REQUEST',
             ]);
@@ -77,23 +93,5 @@ class VerifyEmail extends Notification
     public static function toMailUsing($callback)
     {
         static::$toMailCallback = $callback;
-    }
-
-    /**
-     * Get the verification URL for the given notifiable.
-     *
-     * @param  mixed  $notifiable
-     * @return string
-     */
-    protected function verificationUrl($notifiable)
-    {
-        return URL::temporarySignedRoute(
-            'verification.verify',
-            Carbon::now()->addMinutes(Config::get('auth.verification.expire', 60)),
-            [
-                'id' => $notifiable->getKey(),
-                'hash' => sha1($notifiable->getEmailForVerification()),
-            ]
-        );
     }
 }

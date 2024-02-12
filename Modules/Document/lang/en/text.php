@@ -1,9 +1,11 @@
 <?php
 
 return [
-    'nama_dokumen' => 'Nama Dokumen',
+    'nama_dokumen' => 'Document Name',
     'nama_pengguna' => 'Nama Pengguna',
-    'category_id' => 'Category',
+    'document_type' => 'Type',
+    'expired' => 'Expired At',
+    'department' => 'Department',
     'tanggal' => 'Tanggal',
     'bulan' => 'Bulan',
     'tahun' => 'Tahun',

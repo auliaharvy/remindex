@@ -48,6 +48,7 @@
                                 <th>#</th>
                                 <th>{{ __('labels.backend.users.fields.name') }}</th>
                                 <th>{{ __('labels.backend.users.fields.email') }}</th>
+                                <th>{{ __('labels.backend.users.fields.department') }}</th>
                                 <th>{{ __('labels.backend.users.fields.status') }}</th>
                                 <th>{{ __('labels.backend.users.fields.roles') }}</th>
                                 <th class="text-end">{{ __('labels.backend.action') }}</th>
@@ -103,6 +104,10 @@
             {
                 data: 'email',
                 name: 'email'
+            },
+            {
+                data: 'department_name',
+                name: 'department'
             },
             {
                 data: 'status',

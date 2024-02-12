@@ -14,6 +14,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:api')->get('/documents', function (Request $request) {
-    return $request->user();
-});
+Route::post('/documents', '\Modules\Document\Http\Controllers\Backend\DocumentsController@store');

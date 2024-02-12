@@ -52,22 +52,16 @@
                               @lang("document::text.nama_dokumen")
                             </th>
                             <th>
-                              @lang("document::text.nama_pengguna")
-                            </th>
-                            <th>
-                                @lang("document::text.kategori")
-                            </th>
-                            <th>
-                                @lang("document::text.tanggal")
-                            </th>
-                            <th>
-                              @lang("document::text.bulan")
-                            </th>
-                            <th>
-                              @lang("document::text.tahun")
-                            </th>
-                            <th>
                               @lang("document::text.status")
+                            </th>
+                            <th>
+                              @lang("document::text.document_type")
+                            </th>
+                            <th>
+                                @lang("document::text.department")
+                            </th>
+                            <th>
+                                @lang("document::text.expired")
                             </th>
                             <th class="text-end">
                                 @lang("document::text.action")
@@ -113,29 +107,27 @@
         autoWidth: true,
         responsive: true,
         ajax: '{{ route("backend.$module_name.index_data") }}',
-        columns: [{
-                data: 'name_dokumen',
-                name: 'name_dokumen'
+        columns: [
+            {
+                data: 'name',
+                searchable: true,
+                name: 'name'
             },
             {
-                data: 'name_pengguna',
-                data: 'name_pengguna'
+                data: 'status',
+                name: 'status'
             },
             {
-                data: 'kategori',
-                name: 'kategori'
+                data: 'department_name',
+                name: 'department'
             },
             {
-                data: 'tanggal',
-                name: 'tanggal'
+                data: 'document_type_name',
+                name: 'document type'
             },
             {
-                data: 'bulan',
-                name: 'bulan'
-            },
-            {
-                data: 'tahun',
-                data: 'tahun'
+                data: 'schedule_date',
+                name: 'schedule_date'
             },
             {
                 data: 'action',

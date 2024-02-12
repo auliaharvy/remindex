@@ -9,6 +9,7 @@
                         <tr>
                             <th>{{ __('labels.backend.users.fields.name') }}</th>
                             <th>{{ __('labels.backend.users.fields.email') }}</th>
+                            <th>{{ __('labels.backend.users.fields.department') }}</th>
                             <th>{{ __('labels.backend.users.fields.status') }}</th>
                             <th>{{ __('labels.backend.users.fields.roles') }}</th>
                             <th>{{ __('labels.backend.users.fields.permissions') }}</th>
@@ -28,6 +29,7 @@
                                 </strong>
                             </td>
                             <td>{{ $user->email }}</td>
+                            <td>{{ $user->department_name }}</td>
                             <td>
                                 {!! $user->status_label !!}
                                 {!! $user->confirmed_label !!}

@@ -11,6 +11,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use Spatie\MediaLibrary\HasMedia;
+use Modules\Department\Models\Department;
 use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements HasMedia, MustVerifyEmail
@@ -61,6 +62,23 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
     public function profile()
     {
         return $this->hasOne('App\Models\Userprofile');
+    }
+
+    public function department()
+    {
+        return $this->belongsTo('Modules\Department\Models\Department');
+    }
+
+    public function setDepartmentIdAttribute($value)
+    {
+        $this->attributes['department_id'] = $value;
+
+        try {
+            $department = Department::findOrFail($value);
+            $this->attributes['department_name'] = $department->name;
+        } catch (\Exception $e) {
+            $this->attributes['department_name'] = null;
+        }
     }
 
     /**
