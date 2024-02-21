@@ -65,7 +65,7 @@ class BackendController extends Controller
                 DB::raw('MONTH(schedule_date) AS month'),
                 DB::raw('COUNT(*) AS total_documents')
             )
-            ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
+            // ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
             ->groupBy(DB::raw('YEAR(schedule_date)'), DB::raw('MONTH(schedule_date)'))
             ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
             ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
@@ -121,13 +121,14 @@ class BackendController extends Controller
                 DB::raw('MONTH(schedule_date) AS month'),
                 DB::raw('COUNT(DISTINCT documents.id) AS total_documents') // Menggunakan COUNT(DISTINCT) untuk menghitung dokumen yang unik
             )
-            ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
+            // ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
             ->groupBy(DB::raw('YEAR(schedule_date)'), DB::raw('MONTH(schedule_date)'))
             ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
             ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
             ->get();
         }
 
+        echo $forecast_data;
         $grouped_forecast_data = [];
         foreach ($forecast_data as $data) {
             $grouped_forecast_data[$data->year][] = [
