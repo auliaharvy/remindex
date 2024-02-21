@@ -16,19 +16,24 @@
     <div class="card-body">
 
         <x-backend.section-header>
-            <i class="{{ $module_icon }}"></i> {{ __($module_title) }} <small class="text-muted">{{ __($module_action) }}</small>
+            <i class="{{ $module_icon }}"></i> {{ __($module_title) }} <small class="text-muted">{{ __($module_action)
+                }}</small>
 
             <x-slot name="subtitle">
                 @lang(":module_name Management Dashboard", ['module_name'=>Str::title($module_name)])
             </x-slot>
             <x-slot name="toolbar">
                 <x-backend.buttons.return-back />
-                <a href="{{ route("backend.$module_name.index") }}" class="btn btn-secondary" data-toggle="tooltip" title="{{ ucwords($module_name) }} List"><i class="fas fa-list"></i> List</a>
+                {{-- <a href="{{ route(" backend.$module_name.index") }}" class="btn btn-secondary"
+                    data-toggle="tooltip" title="{{ ucwords($module_name) }} List"><i class="fas fa-list"></i> List</a>
+                --}}
                 @can('edit_'.$module_name)
-                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
-                @endcan
-                @can('edit_'.$module_name)
-                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
+                @if ($$module_name_singular->created_by == auth()->user()->id)
+                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}'
+                    title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
+                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}'
+                    title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
+                @endif
                 @endcan
             </x-slot>
         </x-backend.section-header>
@@ -39,10 +44,11 @@
             <div class="col-12 col-sm-6">
 
                 <p>
-                    @lang("All values of :module_name (Id: :id)", ['module_name'=>ucwords($module_name_singular), 'id'=>$$module_name_singular->id])
+                    @lang("All values of :module_name (Id: :id)", ['module_name'=>ucwords($module_name_singular),
+                    'id'=>$$module_name_singular->id])
                 </p>
                 <table class="table table-responsive-sm table-hover table-bordered">
-                    
+
                     <thead>
                         <tr>
                             <th scope="col">
@@ -125,15 +131,17 @@
                                 </strong>
                             </td>
                             <td>
-                                <a href="{{$$module_name_singular->file}}" class="btn btn-primary btn-sm mt-1" data-toggle="tooltip" title="Download File"><i class="fas fa-download"></i> Download File</a>
+                                <a href="{{$$module_name_singular->file}}" class="btn btn-primary btn-sm mt-1"
+                                    data-toggle="tooltip" title="Download File"><i class="fas fa-download"></i> Download
+                                    File</a>
                             </td>
                         </tr>
                     </tbody>
                 </table>
-                
+
                 {{-- Lightbox2 Library --}}
                 <x-library.lightbox />
-                
+
 
             </div>
             <div class="col-12 col-sm-6">
@@ -142,7 +150,10 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 mb-3">
                         <h4>PIC List</h4>
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i class="fa fa-plus"></i></button>
+                        @if ($$module_name_singular->created_by == auth()->user()->id)
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i
+                                class="fa fa-plus"></i></button>
+                        @endif
                     </div>
                 </div>
                 <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
@@ -151,9 +162,11 @@
                             <th>
                                 Name
                             </th>
+                            @if ($$module_name_singular->created_by == auth()->user()->id)
                             <th class="text-end">
                                 Action
                             </th>
+                            @endif
                         </tr>
                     </thead>
 
@@ -165,10 +178,17 @@
                                 <br>
                                 <small class="text-muted">{{ $pic->userPic->email }}</small>
                             </td>
+                            @if ($$module_name_singular->created_by == auth()->user()->id)
                             <td class="text-end">
-                                {{-- <a href='{{route('backend.documents.delete.pic', $pic->id)}}' class='btn btn-sm btn-danger mt-1 text-white' data-toggle="tooltip" data-method="POST" title="Delete PIC" data-confirm="Are you sure?"><i class="fas fa-trash"></i></a> --}}
-                                <a href="{{route('backend.documents.delete.pic', $pic->id)}}" class="btn btn-danger btn-sm mt-1" data-method="POST" data-token="{{csrf_token()}}" data-toggle="tooltip" title="Delete PIC" data-confirm="Are you sure?"><i class="fas fa-trash-alt"></i></a>
+                                {{-- <a href='{{route(' backend.documents.delete.pic', $pic->id)}}' class='btn btn-sm
+                                    btn-danger mt-1 text-white' data-toggle="tooltip" data-method="POST" title="Delete
+                                    PIC" data-confirm="Are you sure?"><i class="fas fa-trash"></i></a> --}}
+                                <a href="{{route('backend.documents.delete.pic', $pic->id)}}"
+                                    class="btn btn-danger btn-sm mt-1" data-method="POST" data-token="{{csrf_token()}}"
+                                    data-toggle="tooltip" title="Delete PIC" data-confirm="Are you sure?"><i
+                                        class="fas fa-trash-alt"></i></a>
                             </td>
+                            @endif
                         </tr>
                         @endforeach
                     </tbody>
@@ -202,7 +222,8 @@
                             $required = "";
                             ?>
                             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-                            {{ html()->multiselect($field_name)->class('form-control select2-users')->attributes(["$required"]) }}
+                            {{ html()->multiselect($field_name)->class('form-control
+                            select2-users')->attributes(["$required"]) }}
                         </div>
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
@@ -234,8 +255,8 @@
 @push('after-styles')
 
 <style>
-    .select2-container{
-        z-index:100000;
+    .select2-container {
+        z-index: 100000;
     }
 </style>
 @endpush
@@ -271,23 +292,26 @@
         });
     });
 </script>
-    <script>
-        $('#myForm').submit(function(event) {
+<script>
+    $('#myForm').submit(function(event) {
         event.preventDefault(); // Prevent default form submission
 
         // Submit form data using AJAX or redirect to a Laravel route
         $.ajax({
-            url: '{{route("backend.documents.add.pic")}}', // Replace with your route
+            url: '{{route("backend.documents.add_pic")}}', // Replace with your route
             method: 'POST',
             data: $(this).serialize(),
             success: function(response) {
-                $('.modal').modal('hide');
+                $('.myModal').modal('hide');
+                $('div#myModal').modal('hide')
+                // $('div#myModal')
+                // location.replace({{ route('backend.documents.show', encode_id($$module_name_singular->id)) }});
             },
             error: function(error) {
                 console.error(response.errors);
             }
         });
     });
-    </script>
-    @endpush
+</script>
+@endpush
 @endsection

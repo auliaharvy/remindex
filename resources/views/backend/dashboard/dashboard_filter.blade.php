@@ -1,5 +1,8 @@
+<form id="filter-form">
+{{ csrf_field() }}
+<button type="submit">Filter</button>
 <div class="col-12 col-sm-12">
-    <div class="card card-accent-primary">
+    <div class="card card-accent-primary mb-4">
         <div class="card-header">
             @lang('Departments')
         </div>
@@ -16,7 +19,7 @@
 </div>
 
 <div class="col-12 col-sm-12">
-    <div class="card card-accent-primary">
+    <div class="card card-accent-primary mb-4">
         <div class="card-header">
             @lang('Categories')
         </div>
@@ -31,3 +34,26 @@
         </div>
     </div>
 </div>
+</form>
+
+<script>
+document.getElementById('filter-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    // Get the form data
+    var formData = new FormData(this);
+
+    // Send the form data to the server
+    fetch('{{ url("dashboard-filter") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(function(response) {
+        return response.json();
+    })
+    .then(function(data) {
+        // Update the page with the filtered data
+        console.log(data);
+    });
+});
+</script>

@@ -9,7 +9,7 @@
 @section('content')
 <div class="row">
     <div class="col-12 col-sm-12 col-lg-2">
-        @include("backend.dashboard.dashboard_filter")
+        @include("backend.dashboard.dashboard_filter", ['count_document', $count_document])
     </div>
     <div class="col-12 col-sm-12 col-lg-10">
         @include("backend.dashboard.dashboard_total")
@@ -18,7 +18,7 @@
                 <h4 class="card-title mb-10">@lang("Dashboard Expiration Forecast")</h4>
                 <!-- Dashboard Content Area -->
                 <div class="card-text ma-10">
-                    @include("backend.dashboard.dashboard_forecast")
+                    @include("backend.dashboard.dashboard_forecast", ['forecast_data', $grouped_forecast_data])
                 </div>
                 <!-- / Dashboard Content Area -->
             </div>

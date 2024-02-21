@@ -28,7 +28,9 @@ Route::group(['middleware' => ['auth']], function () {
     // Route::get('/', 'BackendController@index')->name('home');
     // Route::get('dashboard', 'BackendController@index')->name('dashboard');
     Route::get('dashboard', 'App\Http\Controllers\Backend\BackendController@index')->name('dashboard');
+    Route::post('dashboard-filter', 'App\Http\Controllers\Backend\BackendController@index_filter')->name('dashboard-filter');
     Route::get('/', 'App\Http\Controllers\Backend\BackendController@index')->name('index');
+    Route::get('/calendar-event', 'App\Http\Controllers\Backend\BackendController@calendar_event')->name('calendar-event');
 });
 
 // Route::get('dashboard', 'App\Http\Controllers\Backend\BackendController@index')->name('dashboard');
@@ -44,6 +46,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.
     Route::get('privacy', 'FrontendController@privacy')->name('privacy');
     Route::get('terms', 'FrontendController@terms')->name('terms');
 
+    Route::get("users/index_list", ['as' => "users.index_list", 'uses' => "UserController@index_list"]);
     Route::group(['middleware' => ['auth']], function () {
         /*
         *
@@ -60,6 +63,7 @@ Route::group(['namespace' => 'App\Http\Controllers\Frontend', 'as' => 'frontend.
         Route::patch('profile/changePassword/{id}', ['as' => "{$module_name}.changePasswordUpdate", 'uses' => "{$controller_name}@changePasswordUpdate"]);
         Route::get("{$module_name}/emailConfirmationResend/{id}", ['as' => "{$module_name}.emailConfirmationResend", 'uses' => "{$controller_name}@emailConfirmationResend"]);
         Route::delete("{$module_name}/userProviderDestroy", ['as' => "{$module_name}.userProviderDestroy", 'uses' => "{$controller_name}@userProviderDestroy"]);
+        // Route::get("{$module_name}/index_list", ['as' => "{$module_name}.index_list", 'uses' => "{$controller_name}@index_list"]);
     });
 });
 

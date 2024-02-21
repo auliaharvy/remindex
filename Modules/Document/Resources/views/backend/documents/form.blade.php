@@ -220,7 +220,7 @@
             minimumInputLength: 1,
             allowClear: true,
             ajax: {
-                url: '{{route("backend.documenttypes.index_list")}}',
+                url: '{{route("frontend.documenttypes.index_list")}}',
                 dataType: 'json',
                 data: function(params) {
                     return {
@@ -242,7 +242,7 @@
             minimumInputLength: 1,
             allowClear: true,
             ajax: {
-                url: '{{route("backend.departments.index_list")}}',
+                url: '{{route("frontend.departments.index_list")}}',
                 dataType: 'json',
                 data: function(params) {
                     return {

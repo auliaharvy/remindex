@@ -30,6 +30,7 @@ Route::group(['namespace' => '\Modules\DocumentType\Http\Controllers\Frontend', 
     $module_name = 'documenttypes';
     $controller_name = 'DocumentTypesController';
     Route::get("$module_name", ['as' => "$module_name.index", 'uses' => "$controller_name@index"]);
+    Route::get("$module_name/index_list", ['as' => "$module_name.index_list", 'uses' => "$controller_name@index_list"]);
     Route::get("$module_name/{id}/{slug?}", ['as' => "$module_name.show", 'uses' => "$controller_name@show"]);
 });
 

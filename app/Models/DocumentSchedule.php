@@ -30,4 +30,9 @@ class DocumentSchedule extends BaseModel
     {
         return $this->belongsTo('Modules\Document\Models\Document');
     }
+
+    public function schedulePic()
+    {
+        return $this->belongsTo('App\Models\SchedulePic');
+    }
 }

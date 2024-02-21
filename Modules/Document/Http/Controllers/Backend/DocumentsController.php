@@ -129,7 +129,7 @@ class DocumentsController extends BackendBaseController
         $title = $page_heading.' '.label_case($module_action);
 
         $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name', 
-        'document_type_name','description','updated_at')->with('document_schedules');
+        'document_type_name','description','updated_at', 'created_by')->with('document_schedules');
 
         $data = $$module_name;
 
@@ -137,7 +137,7 @@ class DocumentsController extends BackendBaseController
             ->addColumn('action', function ($data) {
                 $module_name = $this->module_name;
 
-                return view('backend.includes.action_column', compact('module_name', 'data'));
+                return view('backend.includes.action_column_document', compact('module_name', 'data'));
             })
             ->editColumn('status', function ($data) {
                 switch ($data->status) {
@@ -297,11 +297,10 @@ class DocumentsController extends BackendBaseController
             // ->send(new NewUserDocumentCreated($document));
 
             $user->notify(new NewUserDocumentCreated($document, $schedule));
+            auth()->user()->notify(new DocumentCreated($$module_name_singular));
             // $user->sendEmailVerificationNotification();
             // $user = auth()->user();
             // $user->notify(new NewUserDocumentCreated($document));
-
-            // auth()->user()->notify(new DocumentCreated($$module_name_singular));
             // auth()->user()->notify(new NewCommentAdded('Comment'));
     
             // Buat penugasan PIC
@@ -314,7 +313,6 @@ class DocumentsController extends BackendBaseController
     
             DB::commit();
             // Berikan respons sukses
-            event(new NewDocumentCreated($$module_name_singular));
             Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Added")->important();
             Log::info(label_case($module_title.' '.$module_action)." | '".$$module_name_singular->name.'(ID:'.$$module_name_singular->id.") ' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect("admin/{$module_name}");
@@ -400,7 +398,7 @@ class DocumentsController extends BackendBaseController
      * @param  Request  $request
      * @return Response
      */
-    public function addPic(Request $request)
+    public function add_pic(Request $request)
     {
 
         $module_title = $this->module_title;
@@ -412,15 +410,53 @@ class DocumentsController extends BackendBaseController
 
         try {
             DB::beginTransaction();
-            // Validasi input
-            $validatedData = $request->validate([
-                'document_shcedule_id' => 'required',
-                'pic_list' => 'nullable|array',
-            ]);
+           
             // Buat penugasan PIC
-            foreach ($validatedData['pic_list'] as $userPicId) {
+            foreach ($request->pic_list as $userPicId) {
                 SchedulePic::create([
-                    'document_schedule_id' => $validatedData->document_shcedule_id,
+                    'document_schedule_id' => $request->document_shcedule_id,
+                    'user_pic_id' => $userPicId,
+                ]);
+            }
+    
+            DB::commit();
+            // Berikan respons sukses
+            Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' PIC Assign")->important();
+            Log::info(label_case("Assign Document PIC")." | '' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back();
+            // Berikan respons sukses
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error(label_case("Assign Document PIC")." | Error Creating Assign PIC Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
+        }
+        
+        
+    }
+
+    /**
+     * Renew schedule in Document.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function renew_document(Request $request)
+    {
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        try {
+            DB::beginTransaction();
+           
+            // Buat penugasan PIC
+            foreach ($request->pic_list as $userPicId) {
+                SchedulePic::create([
+                    'document_schedule_id' => $request->document_shcedule_id,
                     'user_pic_id' => $userPicId,
                 ]);
             }

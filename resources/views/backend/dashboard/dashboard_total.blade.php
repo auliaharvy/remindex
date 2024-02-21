@@ -6,8 +6,8 @@
                     TD
                 </div>
                 <div>
-                    <div class="text-medium-emphasis text-uppercase fw-semibold small">Total Dokumen</div>
-                    <div class="fs-6 fw-semibold text-info">120</div>
+                    <div class="text-medium-emphasis text-uppercase fw-semibold small">Total</div>
+                    <div class="fs-6 fw-semibold text-info">{{ $count_document['total'] }}</div>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Active</div>
-                    <div class="fs-6 fw-semibold text-success">80</div>
+                    <div class="fs-6 fw-semibold text-success">{{ $count_document['active'] }}</div>
                 </div>
             </div>
         </div>
@@ -35,7 +35,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Waiting</div>
-                    <div class="fs-6 fw-semibold text-warning">20</div>
+                    <div class="fs-6 fw-semibold text-warning">{{ $count_document['waiting'] }}</div>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Expired</div>
-                    <div class="fs-6 fw-semibold text-danger">20</div>
+                    <div class="fs-6 fw-semibold text-danger">{{ $count_document['expired'] }}</div>
                 </div>
             </div>
         </div>

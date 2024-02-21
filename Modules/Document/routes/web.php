@@ -62,6 +62,6 @@ Route::group(['namespace' => '\Modules\Document\Http\Controllers\Backend', 'as' 
     Route::patch("$module_name/trashed/{id}", ['as' => "$module_name.restore", 'uses' => "$controller_name@restore"]);
     Route::resource("$module_name", "$controller_name");
 
-    Route::post("$module_name/delete-pic/{id}", ['as' => "$module_name.delete.pic", 'uses' => "$controller_name@deletePic"]);
-    Route::post("$module_name/add-pic", ['as' => "$module_name.add.pic", 'uses' => "$controller_name@addPic"]);
+    Route::get("$module_name/delete-pic/{id}", ['as' => "$module_name.delete.pic", 'uses' => "$controller_name@deletePic"]);
+    Route::post("$module_name/add-pic", ['as' => "$module_name.add_pic", 'uses' => "$controller_name@add_pic"]);
 });
