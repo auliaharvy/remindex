@@ -7,6 +7,7 @@ use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
 class Kernel extends ConsoleKernel
 {
+
     /**
      * Define the application's command schedule.
      */
@@ -16,6 +17,7 @@ class Kernel extends ConsoleKernel
 
         // Backup Cleanup
         $schedule->command('backup:clean')->daily()->at('01:00');
+        $schedule->command('app:document-reminder')->everyMinute();
     }
 
     /**

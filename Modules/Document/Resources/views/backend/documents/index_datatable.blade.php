@@ -119,14 +119,17 @@
             },
             {
                 data: 'department_name',
-                name: 'department'
+                searchable: true,
+                name: 'department_name'
             },
             {
                 data: 'document_type_name',
-                name: 'document type'
+                searchable: true,
+                name: 'document_type_name'
             },
             {
                 data: 'schedule_date',
+                searchable: false,
                 name: 'schedule_date'
             },
             {

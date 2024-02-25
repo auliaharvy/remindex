@@ -45,7 +45,7 @@ class BackendController extends Controller
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->get();
-            
+
             // Mendapatkan data count document
             $total_document = $document_model::count();
             $total_active_document = $document_model::where('status', 1)->count();
@@ -70,7 +70,7 @@ class BackendController extends Controller
             ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
             ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
             ->get();
-            
+
         } else {
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->where('id', $user->department_id)->get();
@@ -128,7 +128,6 @@ class BackendController extends Controller
             ->get();
         }
 
-        echo $forecast_data;
         $grouped_forecast_data = [];
         foreach ($forecast_data as $data) {
             $grouped_forecast_data[$data->year][] = [
@@ -138,7 +137,7 @@ class BackendController extends Controller
         }
 
         logUserAccess("Dashboard");
-        
+
         return view(
             "backend.index",
             compact('departments', 'documenttypes', 'count_document', 'forecast_data', 'grouped_forecast_data')
@@ -170,7 +169,7 @@ class BackendController extends Controller
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->get();
-            
+
             // Mendapatkan data count document
             $total_document = $document_model::count();
             $total_active_document = $document_model::where('status', 1)->count();
@@ -195,7 +194,7 @@ class BackendController extends Controller
             ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
             ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
             ->get();
-            
+
         } else {
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->where('id', $user->department_id)->get();
@@ -262,7 +261,7 @@ class BackendController extends Controller
         }
 
         logUserAccess("Dashboard-Filter");
-        
+
         return view(
             "backend.index",
             compact('departments', 'documenttypes', 'count_document', 'forecast_data', 'grouped_forecast_data')

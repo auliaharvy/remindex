@@ -128,7 +128,7 @@ class DocumentsController extends BackendBaseController
         $page_heading = label_case($module_title);
         $title = $page_heading.' '.label_case($module_action);
 
-        $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name', 
+        $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name',
         'document_type_name','description','updated_at', 'created_by')->with('document_schedules');
 
         $data = $$module_name;
@@ -144,15 +144,15 @@ class DocumentsController extends BackendBaseController
                     case '1':
                         $return_string = '<span class="badge bg-success">Active</span>';
                         break;
-        
+
                     case '2':
                         $return_string = '<span class="badge bg-warning text-dark">Inactive</span>';
                         break;
-                    
+
                     case '3':
                         $return_string = '<span class="badge bg-danger">Expired</span>';
                         break;
-        
+
                     default:
                         $return_string = '<span class="badge bg-primary">Status:'.$this->status.'</span>';
                         break;
@@ -170,7 +170,7 @@ class DocumentsController extends BackendBaseController
                     } else {
                         $output = abs($diffInDays)." Hari Lewat expired";
                     }
-                    
+
                     // Format with desired units
                     $formattedOutput = $referenceDate->format('Y-m-d') . " ( $output )";
                     return $formattedOutput;
@@ -195,7 +195,7 @@ class DocumentsController extends BackendBaseController
             ->orderColumns(['id'], '-:column $1')
             ->make(true);
     }
-    
+
     /**
      * Show the form for creating a new resource.
      *
@@ -278,7 +278,7 @@ class DocumentsController extends BackendBaseController
                 'description' => $validatedData['description'],
                 'status' => 1,
             ]);
-    
+
             $date = Carbon::parse($validatedData['expiration_date']);
             $dateWithTime = $date->startOfDay();
 
@@ -302,7 +302,7 @@ class DocumentsController extends BackendBaseController
             // $user = auth()->user();
             // $user->notify(new NewUserDocumentCreated($document));
             // auth()->user()->notify(new NewCommentAdded('Comment'));
-    
+
             // Buat penugasan PIC
             foreach ($validatedData['pic_list'] as $userPicId) {
                 SchedulePic::create([
@@ -310,7 +310,7 @@ class DocumentsController extends BackendBaseController
                     'user_pic_id' => $userPicId,
                 ]);
             }
-    
+
             DB::commit();
             // Berikan respons sukses
             Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Added")->important();
@@ -347,7 +347,7 @@ class DocumentsController extends BackendBaseController
         $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
         // get data document PIC
         $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
-        
+
         // data schedule
         $referenceDate = Carbon::parse($documentSchedule->schedule_date);
         $today = Carbon::today();
@@ -388,8 +388,8 @@ class DocumentsController extends BackendBaseController
             Log::error(label_case("Document delete PIC")." | Error Delete PIC by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect()->back()->withErrors("Error Delete PIC");
         }
-        
-        
+
+
     }
 
     /**
@@ -410,7 +410,7 @@ class DocumentsController extends BackendBaseController
 
         try {
             DB::beginTransaction();
-           
+
             // Buat penugasan PIC
             foreach ($request->pic_list as $userPicId) {
                 SchedulePic::create([
@@ -418,7 +418,7 @@ class DocumentsController extends BackendBaseController
                     'user_pic_id' => $userPicId,
                 ]);
             }
-    
+
             DB::commit();
             // Berikan respons sukses
             Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' PIC Assign")->important();
@@ -430,8 +430,8 @@ class DocumentsController extends BackendBaseController
             Log::error(label_case("Assign Document PIC")." | Error Creating Assign PIC Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
         }
-        
-        
+
+
     }
 
     /**
@@ -452,7 +452,7 @@ class DocumentsController extends BackendBaseController
 
         try {
             DB::beginTransaction();
-           
+
             // Buat penugasan PIC
             foreach ($request->pic_list as $userPicId) {
                 SchedulePic::create([
@@ -460,7 +460,7 @@ class DocumentsController extends BackendBaseController
                     'user_pic_id' => $userPicId,
                 ]);
             }
-    
+
             DB::commit();
             // Berikan respons sukses
             Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' PIC Assign")->important();
@@ -472,8 +472,45 @@ class DocumentsController extends BackendBaseController
             Log::error(label_case("Assign Document PIC")." | Error Creating Assign PIC Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
         }
-        
-        
+
+
     }
-    
+
+
+    /**
+     * Send Email Reminder.
+     *
+     * @return Response
+     */
+    public function document_reminder()
+    {
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $reminders = DocumentSchedule::where('schedule_date', '>', Carbon::now())
+            ->where('reminder_day', '<=', Carbon::now()->diffInDays($schedule_date))
+            ->where('email_sent', false)
+            ->get();
+
+        foreach ($reminders as $reminder) {
+            // Hitung waktu pengingat berikutnya
+            $nextRemindAt = Carbon::now()->addDays($reminder->reminder_day);
+
+            // Kirim email pengingat
+            $reminder->sendEmail();
+
+            // Update data reminder
+            $reminder->reminder_day--;
+            $reminder->reminder_day--;
+            $reminder->save();
+        }
+
+
+
+    }
 }
