@@ -59,16 +59,16 @@ class BackendController extends Controller
             ];
 
             // Mendapatkan data forecast document
-            $forecast_data = DB::table('document_schedules')
+            $forecast_data = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
             ->select(
-                DB::raw('YEAR(schedule_date) AS year'),
-                DB::raw('MONTH(schedule_date) AS month'),
+                DB::raw('YEAR(document_schedules.schedule_date) AS year'),
+                DB::raw('MONTH(document_schedules.schedule_date) AS month'),
                 DB::raw('COUNT(*) AS total_documents')
             )
             // ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
-            ->groupBy(DB::raw('YEAR(schedule_date)'), DB::raw('MONTH(schedule_date)'))
-            ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
-            ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
+            ->groupBy(DB::raw('YEAR(document_schedules.schedule_date)'), DB::raw('MONTH(document_schedules.schedule_date)'))
+            ->orderBy(DB::raw('YEAR(document_schedules.schedule_date)'), 'asc')
+            ->orderBy(DB::raw('MONTH(document_schedules.schedule_date)'), 'asc')
             ->get();
 
         } else {
@@ -111,8 +111,7 @@ class BackendController extends Controller
             ];
 
             // Mendapatkan data forecast document
-            $forecast_data = DB::table('document_schedules')
-            ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            $forecast_data = DocumentSchedule::join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
             ->join('documents', 'document_schedules.document_id', '=', 'documents.id')
             ->where('schedule_pics.user_pic_id', auth()->id())
             ->where('documents.user_id', auth()->id())
@@ -275,8 +274,7 @@ class BackendController extends Controller
         $documenttype_model = $this->documenttype_model;
         $document_model = $this->document_model;
 
-        $documents = DB::table('documents')
-            ->join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+        $documents = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
             ->select('documents.name', 'documents.status','document_schedules.schedule_date')
             ->get();
 

@@ -15,7 +15,7 @@ use Spatie\IcalendarGenerator\Components\Calendar;
 use Spatie\IcalendarGenerator\Components\Event;
 use Spatie\IcalendarGenerator\Properties\TextProperty;
 
-class NewUserDocumentCreated extends Notification
+class NewDocumentCreatedPic extends Notification
 {
     public $document;
 

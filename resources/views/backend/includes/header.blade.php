@@ -16,6 +16,16 @@ $notifications_latest = optional($notifications)->take(5);
             <li class="nav-item"><a class="nav-link" href="{{ route('backend.home') }}" target="_blank">{{app_name()}}&nbsp;<i class="fa-solid fa-arrow-up-right-from-square"></i></a></li>
         </ul>
         <ul class="header-nav ms-auto">
+        <form class="form-inline my-2 my-lg-0">
+            <div class="input-group">
+                <select class="itemName form-control" style="width:500px;" name="itemName"></select>
+                <div class="input-group-append">
+                    <button class="btn btn-info" type="button" id="button-image" data-input="itemName"><i class="fa-solid fa-magnifying-glass"></i></button>
+                </div>
+            </div>
+        </form>
+        </ul>
+        <ul class="header-nav ms-auto">
             <li class="nav-item dropdown">
                 <a class="nav-link" data-coreui-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
                     <i class="fa-regular fa-bell"></i>
@@ -108,3 +118,48 @@ $notifications_latest = optional($notifications)->take(5);
         </div>
     </div>
 </header>
+
+<x-library.select2 />
+
+@push('after-styles')
+<!-- File Manager -->
+<link rel="stylesheet" href="{{ asset('vendor/file-manager/css/file-manager.css') }}">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css" rel="stylesheet">
+@endpush
+
+@push ('after-scripts')
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+        $(document).on('select2:open', () => {
+            document.querySelector('.select2-search__field').focus();
+            document.querySelector('.select2-container--open .select2-search__field').focus();
+        });
+
+        $('itemName').select2({
+            theme: "bootstrap4",
+            placeholder: '@lang("Select an option")',
+            minimumInputLength: 1,
+            allowClear: true,
+            ajax: {
+                url: '{{route("frontend.documenttypes.index_list")}}',
+                dataType: 'json',
+                data: function(params) {
+                    return {
+                        q: $.trim(params.term)
+                    };
+                },
+                processResults: function(data) {
+                    return {
+                        results: data
+                    };
+                },
+                cache: true
+            },
+        });
+    });
+</script>
+@endpush

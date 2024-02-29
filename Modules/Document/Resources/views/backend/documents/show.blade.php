@@ -29,12 +29,14 @@
                 --}}
                 @can('edit_'.$module_name)
                 @if ($$module_name_singular->created_by == auth()->user()->id)
-                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}'
-                    title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
-                <x-buttons.edit route='{!!route("backend.$module_name.edit", $$module_name_singular)!!}'
-                    title="{{__('Edit')}} {{ ucwords(Str::singular($module_name)) }}" class="ms-1" />
-                @endif
+                <div class="float-end">
+                <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-refresh"></i></a>
                 @endcan
+                @can('delete_'.$module_name)
+                    <a href="{{route("backend.$module_name.destroy", $$module_name_singular)}}" class="btn btn-danger" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
+                @endcan
+                </div>
+                @endif
             </x-slot>
         </x-backend.section-header>
 

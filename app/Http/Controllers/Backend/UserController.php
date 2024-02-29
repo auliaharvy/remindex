@@ -232,7 +232,7 @@ class UserController extends Controller
         if ($request->confirmed === 1) {
             $data_array = Arr::add($data_array, 'email_verified_at', Carbon::now());
         } else {
-            $data_array = Arr::add($data_array, 'email_verified_at', null);
+            $data_array = Arr::add($data_array, 'email_verified_at', Carbon::now());
         }
 
         $$module_name_singular = User::create($data_array);

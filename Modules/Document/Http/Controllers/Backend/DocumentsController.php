@@ -146,7 +146,7 @@ class DocumentsController extends BackendBaseController
                         break;
 
                     case '2':
-                        $return_string = '<span class="badge bg-warning text-dark">Inactive</span>';
+                        $return_string = '<span class="badge bg-warning text-dark">Waiting</span>';
                         break;
 
                     case '3':
@@ -247,14 +247,14 @@ class DocumentsController extends BackendBaseController
             // Validasi input
             $validatedData = $request->validate([
                 'name' => 'required|string|max:255',
-                'document_type' => 'required|exists:document_types,id',
-                'department' => 'required|exists:departments,id',
+                'document_type_id' => 'required|exists:document_types,id',
+                'department_id' => 'required|exists:departments,id',
                 'description' => 'nullable|string',
                 'expiration_date' => 'required|date',
                 'reminder_day' => 'required|integer',
                 'reminder_repeat' => 'required|integer',
                 'reminder_interval' => 'required|integer',
-                'owner' => 'required|string',
+                'user_id' => 'required|string',
                 'pic_list' => 'nullable|array',
                 'file' => 'nullable|string',
                 'location' => 'nullable|string',
@@ -268,9 +268,9 @@ class DocumentsController extends BackendBaseController
 
             // Buat dokumen baru
             $document = Document::create([
-                'user_id' => $validatedData['owner'],
-                'document_type_id' => $validatedData['document_type'],
-                'department_id' => $validatedData['department'],
+                'user_id' => $validatedData['user_id'],
+                'document_type_id' => $validatedData['document_type_id'],
+                'department_id' => $validatedData['department_id'],
                 'file' => $validatedData['file'],
                 'code' => $code,
                 'name' => $validatedData['name'],
@@ -292,12 +292,11 @@ class DocumentsController extends BackendBaseController
                 'reminder_interval' => $validatedData['reminder_interval'],
             ]);
 
-            $user = User::where('id', '=', $validatedData['owner'])->first();
+            $user = User::where('id', '=', $validatedData['user_id'])->first();
             // Mail::to($user)
             // ->send(new NewUserDocumentCreated($document));
 
             $user->notify(new NewUserDocumentCreated($document, $schedule));
-            auth()->user()->notify(new DocumentCreated($$module_name_singular));
             // $user->sendEmailVerificationNotification();
             // $user = auth()->user();
             // $user->notify(new NewUserDocumentCreated($document));
@@ -309,6 +308,9 @@ class DocumentsController extends BackendBaseController
                     'document_schedule_id' => $schedule->id,
                     'user_pic_id' => $userPicId,
                 ]);
+
+                $userPic = User::where('id', '=', $userPicId)->first();
+                $userPic->notify(new NewUserDocumentCreated($document, $schedule));
             }
 
             DB::commit();
@@ -367,6 +369,96 @@ class DocumentsController extends BackendBaseController
             "document::backend.{$module_name}.show",
             compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action', "{$module_name_singular}", 'formattedExpired', 'documentPic', 'documentSchedule')
         );
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function edit($id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Renew';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+
+        // $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
+        // get data document PIC
+        // $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
+        $document_type = DocumentType::get();
+        $data = $$module_name_singular;
+
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+        return view(
+            "{$module_path}.{$module_name}.edit",
+            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', "{$module_name_singular}")
+        );
+    }
+
+    /**
+     * Updates a resource.
+     *
+     * @param  int  $id
+     * @param  Request  $request  The request object.
+     * @param  mixed  $id  The ID of the resource to update.
+     * @return Response
+     * @return RedirectResponse The redirect response.
+     *
+     * @throws ModelNotFoundException If the resource is not found.
+     */
+    public function update(Request $request, $id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Update';
+
+        try {
+            DB::beginTransaction();
+            // Validasi input
+            $$module_name_singular = $module_model::findOrFail($id);
+
+            $validatedData = $request->validate([
+                'expiration_date' => 'required|date',
+                'reminder_day' => 'required|integer',
+                'reminder_repeat' => 'required|integer',
+                'reminder_interval' => 'required|integer',
+            ]);
+
+            $schedule = DocumentSchedule::where('document_id', $id)->first();
+            $schedule->schedule_date = $validatedData['expiration_date'];
+            $schedule->reminder_day = $validatedData['reminder_day'];
+            $schedule->reminder_repeat = $validatedData['reminder_repeat'];
+            $schedule->reminder_interval = $validatedData['reminder_interval'];
+            $schedule->save();
+
+            $$module_name_singular->update($request->all());
+
+            flash(icon().' '.Str::singular($module_title)."' Renew Successfully")->success()->important();
+
+            logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+            return redirect()->route("backend.{$module_name}.show", $$module_name_singular->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->put('form_data', $request->all());
+            Log::error(label_case($module_title.' '.$module_action)." | Error Renew Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
+        }
     }
 
     /**

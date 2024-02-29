@@ -2,28 +2,13 @@
     <div class="col-12">
         <div class="form-group">
             <?php
-            $field_name = 'document_type_id';
-            $field_lable = label_case('Document Type');
-            $field_relation = "document_type";
-            $field_placeholder = $field_lable;
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->select($field_name, isset($document_type)?optional($document_type)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-document-type')->attributes(["$required"]) }}
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="form-group">
-            <?php
             $field_name = 'name';
             $field_lable = label_case($field_name);
             $field_placeholder = $field_lable;
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", "disabled"]) }}
         </div>
     </div>
 </div>
@@ -37,74 +22,10 @@
             $required = "";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", "disabled"]) }}
         </div>
     </div>
 </div>
-<div class="row mb-3">
-    <div class="col-6">
-        <div class="form-group">
-            <?php
-            $field_name = 'user_id';
-            $field_lable = label_case("Owner");
-            $field_relation = "user_id";
-            $field_placeholder = $field_lable;
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$user_id):'')->placeholder($field_placeholder)->class('form-control select2-users')->attributes(["$required"]) }}
-        </div>
-    </div>
-
-    <div class="col-6">
-        <div class="form-group">
-            <?php
-            $field_name = 'department_id';
-            $field_lable = label_case("Department");
-            $field_relation = "department_id";
-            $field_placeholder = $field_lable;
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$department_id):'')->placeholder($field_placeholder)->class('form-control select2-departments')->attributes(["$required"]) }}
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="form-group">
-            <?php
-            $field_name = 'file';
-            $field_lable = label_case($field_name);;
-            $field_placeholder = $field_lable;
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            <div class="input-group">
-                {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", 'aria-label'=>'Image', 'aria-describedby'=>'button-image']) }}
-                <div class="input-group-append">
-                    <button class="btn btn-info" type="button" id="button-image" data-input="{{$field_name}}"><i class="fas fa-folder-open"></i> @lang('Browse')</button>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row mb-3">
-    <div class="col-12">
-        <div class="form-group">
-            <?php
-            $field_name = 'location';
-            $field_lable = label_case($field_name);
-            $field_placeholder = $field_lable;
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
-        </div>
-    </div>
-</div>
-
-{{-- Page 2 --}}
 <div class="row mb-3">
     <div class="col-12">
         <div class="form-group">
@@ -157,25 +78,6 @@
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->number($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
-        </div>
-    </div>
-</div>
-
-<div class="row mb-3">
-    <div class="col">
-        <div class="form-group">
-            <?php
-            $field_name = 'pic_list[]';
-            $field_lable = 'Assign to';
-            $field_relation = "users";
-            $field_placeholder = __("Select an option");
-            $required = "";
-            ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            {{ html()->multiselect($field_name,
-                isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name', 'id'):'',
-                isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('id')->toArray():''
-                )->class('form-control select2-users')->attributes(["$required"]) }}
         </div>
     </div>
 </div>
