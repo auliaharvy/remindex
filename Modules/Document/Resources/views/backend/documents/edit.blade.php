@@ -29,9 +29,112 @@
 
         <div class="row mt-4">
             <div class="col">
-                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.update", $$module_name_singular))->class('form')->open() }}
+                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.renew.update", $$module_name_singular))->class('form')->open() }}
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'document_type_id';
+                            $field_lable = label_case('Document Type');
+                            $field_relation = "document_type";
+                            $field_placeholder = __("Select an option");
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->select($field_name, $document_types  )->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'name';
+                            $field_lable = label_case($field_name);
+                            $field_placeholder = $field_lable;
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'description';
+                            $field_lable = label_case($field_name);
+                            $field_placeholder = $field_lable;
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->textarea($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-6">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'user_id';
+                            $field_lable = label_case("Owner");
+                            $field_relation = "user";
+                            $field_placeholder = __("Select an option");
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->select($field_name, $users  )->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
 
-                @include ("document::backend.$module_name.form_edit")
+                    <div class="col-6">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'department_id';
+                            $field_lable = label_case("Department");
+                            $field_relation = "department";
+                            $field_placeholder = __("Select an option");
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->select($field_name, $departments  )->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'file';
+                            $field_lable = label_case($field_name);;
+                            $field_placeholder = $field_lable;
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            <div class="input-group">
+                                {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", 'aria-label'=>'Image', 'aria-describedby'=>'button-image']) }}
+                                <div class="input-group-append">
+                                    <button class="btn btn-info" type="button" id="button-image" data-input="{{$field_name}}"><i class="fas fa-folder-open"></i> @lang('Browse')</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
+                            $field_name = 'location';
+                            $field_lable = label_case($field_name);
+                            $field_placeholder = $field_lable;
+                            $required = "";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
 
                 <div class="row">
                     <div class="col-4">

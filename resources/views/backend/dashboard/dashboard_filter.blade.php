@@ -34,6 +34,23 @@
         </div>
     </div>
 </div>
+
+<div class="col-12 col-sm-12">
+    <div class="card card-accent-primary mb-4">
+        <div class="card-header">
+            @lang('Locations')
+        </div>
+        <div class="card-body">
+            @if ($locations->count())
+            @foreach($locations as $location)
+            <div class="checkbox">
+                {{ html()->label(html()->checkbox('locations[]', old('locations') && in_array($location->name, old('locations')) ? true : false, $location->name)->id('location-'.$location->name) . ' ' . $location->name)->for('location-'.$location->name) }}
+            </div>
+            @endforeach
+            @endif
+        </div>
+    </div>
+</div>
 </form>
 
 <script>

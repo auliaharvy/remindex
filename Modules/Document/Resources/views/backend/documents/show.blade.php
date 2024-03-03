@@ -24,16 +24,14 @@
             </x-slot>
             <x-slot name="toolbar">
                 <x-backend.buttons.return-back />
-                {{-- <a href="{{ route(" backend.$module_name.index") }}" class="btn btn-secondary"
-                    data-toggle="tooltip" title="{{ ucwords($module_name) }} List"><i class="fas fa-list"></i> List</a>
-                --}}
-                @can('edit_'.$module_name)
                 @if ($$module_name_singular->created_by == auth()->user()->id)
                 <div class="float-end">
-                <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-refresh"></i></a>
+                @can('edit_'.$module_name)
+                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-lg mt-1 text-white" data-toggle="tooltip" title="Edit Document"><i class="fas fa-pencil"></i></a>
+                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-lg mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-refresh"></i></a>
                 @endcan
                 @can('delete_'.$module_name)
-                    <a href="{{route("backend.$module_name.destroy", $$module_name_singular)}}" class="btn btn-danger" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
+                    <a href='{{route("backend.$module_name.destroy", $$module_name_singular)}}' class="btn btn-danger btn-lg mt-1 text-white" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
                 @endcan
                 </div>
                 @endif

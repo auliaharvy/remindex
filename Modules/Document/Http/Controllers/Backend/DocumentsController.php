@@ -213,14 +213,14 @@ class DocumentsController extends BackendBaseController
         $module_action = 'Create';
 
         $users = User::pluck('name', 'id', 'department_id', 'department_name', 'email');
-        $categories = DocumentType::pluck('name', 'id');
+        $document_types = DocumentType::pluck('name', 'id');
         $departments = Department::pluck('name', 'id');
 
         Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
 
         return view(
             "document::backend.{$module_name}.create",
-            compact('module_title', 'module_name', 'module_path','module_icon', 'module_action', 'module_name_singular', 'categories', 'departments', 'users')
+            compact('module_title', 'module_name', 'module_path','module_icon', 'module_action', 'module_name_singular', 'document_types', 'departments', 'users')
         );
     }
 
@@ -387,21 +387,23 @@ class DocumentsController extends BackendBaseController
         $module_model = $this->module_model;
         $module_name_singular = Str::singular($module_name);
 
-        $module_action = 'Renew';
+        $module_action = 'Edit';
 
         $$module_name_singular = $module_model::findOrFail($id);
 
         // $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
         // get data document PIC
         // $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
-        $document_type = DocumentType::get();
+        $document_types = DocumentType::pluck('name', 'id');
+        $departments = Department::pluck('name', 'id');
+        $users = User::pluck('name', 'id');
         $data = $$module_name_singular;
 
         logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
 
         return view(
             "{$module_path}.{$module_name}.edit",
-            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', "{$module_name_singular}")
+            compact('document_types', 'users', 'departments', 'module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', "{$module_name_singular}")
         );
     }
 
@@ -426,6 +428,83 @@ class DocumentsController extends BackendBaseController
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'Update';
+
+        try {
+            DB::beginTransaction();
+            // Validasi input
+            $$module_name_singular = $module_model::findOrFail($id);
+
+
+            $$module_name_singular->update($request->all());
+
+            flash(icon().' '.Str::singular($module_title)."' Update Successfully")->success()->important();
+
+            logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+            return redirect()->route("backend.{$module_name}.show", $$module_name_singular->id);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            session()->put('form_data', $request->all());
+            Log::error(label_case($module_title.' '.$module_action)." | Error Renew Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
+        }
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return Response
+     * @return \Illuminate\Contracts\View\View
+     */
+    public function renew($id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Renew';
+
+        $$module_name_singular = $module_model::findOrFail($id);
+
+        // $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
+        // get data document PIC
+        // $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
+        $document_types = DocumentType::pluck('name', 'id');
+        $data = $$module_name_singular;
+
+        logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
+
+        return view(
+            "{$module_path}.{$module_name}.renew",
+            compact('document_types' ,'module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', "{$module_name_singular}")
+        );
+    }
+
+    /**
+     * Updates a resource.
+     *
+     * @param  int  $id
+     * @param  Request  $request  The request object.
+     * @param  mixed  $id  The ID of the resource to update.
+     * @return Response
+     * @return RedirectResponse The redirect response.
+     *
+     * @throws ModelNotFoundException If the resource is not found.
+     */
+    public function renew_update(Request $request, $id)
+    {
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        $module_action = 'Renew';
 
         try {
             DB::beginTransaction();

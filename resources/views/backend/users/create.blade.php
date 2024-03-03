@@ -76,17 +76,14 @@
                     <?php
                         $field_name = 'department';
                         $field_lable = label_case("Department");
-                        $field_relation = "department";
-                        $field_placeholder = $field_lable;
+                        $field_relation = "departments";
+                        $field_placeholder = __("Select an option");
                         $required = "required";
                     ?>
-                    {{ html()->label(__('labels.backend.users.fields.department'))->class('col-sm-2
-                    form-control-label')->for('department') }}
+                    {{ html()->label(__('labels.backend.users.fields.department'))->class('col-sm-2 form-control-label')->for('department') }}
                     <div class="col-sm-10">
-                        {{ html()->select($field_name,
-                        isset($$module_name_singular)?optional($$module_name_singular->$field_relation)->pluck('name',
-                        'id'):'')->placeholder($field_placeholder)->class('form-control
-                        select2-departments')->attributes(["$required"]) }}
+                        <!-- {{ html()->select($field_name, $departments->pluck('name', 'id'))->placeholder($field_placeholder)->class('form-select')->attributes(["$required"]) }} -->
+                        {{ html()->select($field_name, $departments->pluck('name', 'id'))->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
                     </div>
                 </div>
 
@@ -244,6 +241,7 @@
 </div>
 
 <x-library.select2 />
+@endsection
 
 @push ('after-scripts')
 <script type="module">
@@ -254,20 +252,20 @@
         });
 
         $('.select2-departments').select2({
-            // theme: "bootstrap4",
+            theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
-            allowClear: true,
+            minimumInputLength: 1,
+            allowClear: false,
             ajax: {
-                url: '{{route("backend.departments.index_list")}}',
+                url: '{{route("frontend.departments.index_list")}}',
                 dataType: 'json',
                 data: function(params) {
                     return {
-                        q: $.trim(params.term)
+                        q: $.trim(params.term),
                     };
                 },
                 processResults: function(data) {
-                    console.log(data);
+                    console.log();
                     return {
                         results: data
                     };
@@ -278,5 +276,3 @@
     });
 </script>
 @endpush
-
-@endsection

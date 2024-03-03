@@ -45,30 +45,32 @@
 
         <div class="row mt-4">
             <div class="col">
-                <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
-                    <thead>
-                        <tr>
-                            <th>
-                              @lang("document::text.nama_dokumen")
-                            </th>
-                            <th>
-                              @lang("document::text.status")
-                            </th>
-                            <th>
-                              @lang("document::text.document_type")
-                            </th>
-                            <th>
-                                @lang("document::text.department")
-                            </th>
-                            <th>
-                                @lang("document::text.expired")
-                            </th>
-                            <th class="text-end">
-                                @lang("document::text.action")
-                            </th>
-                        </tr>
-                    </thead>
-                </table>
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered table-hover table-responsive-sm">
+                        <thead>
+                            <tr>
+                                <th>
+                                @lang("document::text.nama_dokumen")
+                                </th>
+                                <th>
+                                @lang("document::text.status")
+                                </th>
+                                <th>
+                                @lang("document::text.document_type")
+                                </th>
+                                <th>
+                                    @lang("document::text.department")
+                                </th>
+                                <th>
+                                    @lang("document::text.expired")
+                                </th>
+                                <th class="text-end">
+                                    @lang("document::text.action")
+                                </th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>

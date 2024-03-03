@@ -143,47 +143,6 @@
                 @endif
             </div>
         </div>
-
-        <div class="col">
-            <h4>
-                User Profile
-            </h4>
-            <div class="table-responsive">
-                <table class="table table-responsive-sm table-hover table-bordered">
-                    <?php
-                    $all_columns = $userprofile->getTableColumns();
-                    ?>
-                    <thead>
-                        <tr>
-                            <th scope="col">
-                                <strong>
-                                    Name
-                                </strong>
-                            </th>
-                            <th scope="col">
-                                <strong>
-                                    Value
-                                </strong>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($all_columns as $column)
-                        <tr>
-                            <td>
-                                <strong>
-                                    {{ label_case($column->Field) }}
-                                </strong>
-                            </td>
-                            <td>
-                                {!! show_column_value($$module_name_singular, $column) !!}
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
     </div>
 </x-backend.layouts.show>
 @endsection

@@ -46,6 +46,9 @@ class BackendController extends Controller
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->get();
 
+            // Mendapatkan data lokasi dokumen
+            $locations = $document_model::select('location as name')->groupBy('location')->get();
+
             // Mendapatkan data count document
             $total_document = $document_model::count();
             $total_active_document = $document_model::where('status', 1)->count();
@@ -74,6 +77,9 @@ class BackendController extends Controller
         } else {
             // Mendpatkan data department
             $departments = $department_model::select('name', 'id')->where('id', $user->department_id)->get();
+            $locations = $document_model::select('location as name')->groupBy('location')
+            ->where('user_id', $userId)
+            ->get();
 
             // Mendapatkan data count document
             $total_document = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
@@ -139,7 +145,7 @@ class BackendController extends Controller
 
         return view(
             "backend.index",
-            compact('departments', 'documenttypes', 'count_document', 'forecast_data', 'grouped_forecast_data')
+            compact('locations', 'departments', 'documenttypes', 'count_document', 'forecast_data', 'grouped_forecast_data')
         );
     }
 

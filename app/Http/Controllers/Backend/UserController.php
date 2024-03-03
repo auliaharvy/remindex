@@ -12,6 +12,8 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\Userprofile;
 use App\Models\UserProvider;
+use Modules\Department\Models\Department;
+use Modules\Document\Models\Document;
 use App\Notifications\UserAccountCreated;
 use Carbon\Carbon;
 use Exception;
@@ -192,11 +194,12 @@ class UserController extends Controller
         $module_action = 'Create';
 
         $roles = Role::get();
+        $departments = Department::get();
         $permissions = Permission::select('name', 'id')->get();
 
         return view(
             "backend.{$module_name}.create",
-            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'roles', 'permissions')
+            compact('module_title', 'module_name', 'module_path', 'module_icon', 'module_action', 'module_name_singular', 'roles', 'permissions', 'departments')
         );
     }
 
@@ -229,32 +232,33 @@ class UserController extends Controller
         $data_array['department_id'] = $request->department;
         $data_array['password'] = Hash::make($request->password);
 
-        if ($request->confirmed === 1) {
+        if ($request->confirmed == 1) {
             $data_array = Arr::add($data_array, 'email_verified_at', Carbon::now());
         } else {
-            $data_array = Arr::add($data_array, 'email_verified_at', Carbon::now());
+            $data_array = Arr::add($data_array, 'email_verified_at', null);
         }
 
         $$module_name_singular = User::create($data_array);
 
         $roles = $request['roles'];
         $permissions = $request['permissions'];
-
+        $$module_name_singular->syncRoles($roles);
+        $$module_name_singular->syncPermissions($permissions);
         // Sync Roles
-        if (isset($roles)) {
-            $$module_name_singular->syncRoles($roles);
-        } else {
-            $roles = [];
-            $$module_name_singular->syncRoles($roles);
-        }
+        // if (isset($roles)) {
+        //     $$module_name_singular->syncRoles($roles);
+        // } else {
+        //     $roles = [];
+        //     $$module_name_singular->syncRoles($roles);
+        // }
 
         // Sync Permissions
-        if (isset($permissions)) {
-            $$module_name_singular->syncPermissions($permissions);
-        } else {
-            $permissions = [];
-            $$module_name_singular->syncPermissions($permissions);
-        }
+        // if (isset($permissions)) {
+        //     $$module_name_singular->syncPermissions($permissions);
+        // } else {
+        //     $permissions = [];
+        //     $$module_name_singular->syncPermissions($permissions);
+        // }
 
         // Username
         $id = $$module_name_singular->id;
@@ -262,11 +266,19 @@ class UserController extends Controller
         $$module_name_singular->username = $username;
         $$module_name_singular->save();
 
+        $$module_name_singular->profile()->create([
+            'username' => $$module_name_singular->username,
+            'name' => $$module_name_singular->name,
+            'first_name' => $$module_name_singular->first_name,
+            'last_name' => $$module_name_singular->last_name,
+            'email' => $$module_name_singular->email,
+        ]);
+
         event(new UserCreated($$module_name_singular));
 
         Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Created")->important();
 
-        if ($request->email_credentials === 1) {
+        if ($request->email_credentials == 1) {
             $data = [
                 'password' => $request->password,
             ];

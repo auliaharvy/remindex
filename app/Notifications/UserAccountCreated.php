@@ -7,10 +7,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class UserAccountCreated extends Notification implements ShouldQueue
+class UserAccountCreated extends Notification
 {
-    use Queueable;
-
     protected $request;
 
     /**

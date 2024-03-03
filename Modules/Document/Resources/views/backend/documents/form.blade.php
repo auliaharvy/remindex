@@ -188,6 +188,16 @@
 <link rel="stylesheet" href="{{ asset('vendor/file-manager/css/file-manager.css') }}">
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.20/summernote-lite.min.css" rel="stylesheet">
+<style>
+    .note-editor.note-frame :after {
+        display: none;
+    }
+
+    .note-editor .note-toolbar .note-dropdown-menu,
+    .note-popover .popover-content .note-dropdown-menu {
+        min-width: 180px;
+    }
+</style>
 @endpush
 
 @push ('after-scripts')
@@ -200,6 +210,43 @@
         window.SetUrl = cb;
     };
 
+    // Define LFM summernote button
+    var LFMButton = function(context) {
+        var ui = $.summernote.ui;
+        var button = ui.button({
+            contents: '<i class="note-icon-picture"></i> ',
+            tooltip: 'Insert image with filemanager',
+            click: function() {
+
+                lfm({
+                    type: 'image',
+                    prefix: '/laravel-filemanager'
+                }, function(lfmItems, path) {
+                    lfmItems.forEach(function(lfmItem) {
+                        context.invoke('insertImage', lfmItem.url);
+                    });
+                });
+
+            }
+        });
+        return button.render();
+    };
+
+    $('#content').summernote({
+        height: 120,
+        toolbar: [
+            ['style', ['style']],
+            ['font', ['fontname', 'fontsize', 'bold', 'underline', 'clear']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            ['insert', ['link', 'lfm', 'video']],
+            ['view', ['codeview', 'undo', 'redo', 'help']],
+        ],
+        buttons: {
+            lfm: LFMButton
+        }
+    });
 </script>
 
 <script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>

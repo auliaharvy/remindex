@@ -64,6 +64,16 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         return $this->hasOne('App\Models\Userprofile');
     }
 
+    /**
+     * Get the user profile associated with the user.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasOne
+     */
+    public function userprofile()
+    {
+        return $this->hasOne('App\Models\Userprofile');
+    }
+
     public function department()
     {
         return $this->belongsTo('Modules\Department\Models\Department');
@@ -81,15 +91,6 @@ class User extends Authenticatable implements HasMedia, MustVerifyEmail
         }
     }
 
-    /**
-     * Get the user profile associated with the user.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\HasOne
-     */
-    public function userprofile()
-    {
-        return $this->hasOne('App\Models\Userprofile');
-    }
 
     /**
      * Get the list of users related to the current User.

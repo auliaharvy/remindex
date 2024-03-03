@@ -346,7 +346,7 @@
         $('.select2-category').select2({
             theme: "bootstrap4",
             placeholder: '@lang("Select an option")',
-            minimumInputLength: 2,
+            minimumInputLength: 1,
             allowClear: true,
             ajax: {
                 url: '{{route("backend.categories.index_list")}}',
