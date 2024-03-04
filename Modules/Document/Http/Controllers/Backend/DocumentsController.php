@@ -308,7 +308,6 @@ class DocumentsController extends BackendBaseController
                     'document_schedule_id' => $schedule->id,
                     'user_pic_id' => $userPicId,
                 ]);
-
                 $userPic = User::where('id', '=', $userPicId)->first();
                 $userPic->notify(new NewUserDocumentCreated($document, $schedule));
             }

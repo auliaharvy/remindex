@@ -17,7 +17,8 @@ class Kernel extends ConsoleKernel
 
         // Backup Cleanup
         $schedule->command('backup:clean')->daily()->at('01:00');
-        $schedule->command('app:document-reminder')->everyMinute();
+        // $schedule->command('app:document-reminder')->everyMinute();
+        $schedule->command('app:document-reminder')->daily()->at('00:00');
     }
 
     /**

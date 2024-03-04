@@ -9,8 +9,11 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Illuminate\Support\Str;
 use Modules\Document\Models\Document;
+use App\Notifications\ExpiredDocument;
+use App\Notifications\WaitingDocument;
+use App\Models\User;
 
-class AuthPermissionCommand extends Command
+class DocumentReminderCommand extends Command
 {
     /**
      * The name and signature of the console command.
@@ -52,11 +55,6 @@ class AuthPermissionCommand extends Command
             // $this->info($reminder_gap);
             // $this->info($reminder_repeat);
 
-            if($reminder_repeat > 0) {
-                // kirim email
-
-            }
-
             if($reminder_gap < $reminder->reminder_day ) {
                 $reminder->reminder_day--;
                 $reminder->reminder_sent++;
@@ -67,6 +65,12 @@ class AuthPermissionCommand extends Command
                 $document = Document::findOrFail($reminder->document_id);
                 $document->status = 2;
                 $document->save();
+
+                if($reminder_repeat > 0) {
+                    // kirim email
+                    $userPic = User::where('id', '=', $document->user_id)->first();
+                    $userPic->notify(new ExpiredDocument($document, $reminder));
+                }
             }
 
             if($reminder->schedule_date <  $today) {
@@ -79,6 +83,12 @@ class AuthPermissionCommand extends Command
                 $document = Document::findOrFail($reminder->document_id);
                 $document->status = 3;
                 $document->save();
+
+                if($reminder_repeat > 0) {
+                    // kirim email
+                    $userPic = User::where('id', '=', $document->user_id)->first();
+                    $userPic->notify(new WaitingDocument($document, $reminder));
+                }
             }
             // Kirim email pengingat
             // $reminder->sendEmail();
