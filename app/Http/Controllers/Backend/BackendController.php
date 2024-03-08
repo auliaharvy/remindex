@@ -39,13 +39,14 @@ class BackendController extends Controller
         $document_model = $this->document_model;
 
         // Mendpatkan data document Type
-        $documenttypes = $documenttype_model::select('name', 'id')->get();
+
 
 
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
-            $departments = $department_model::select('name', 'id')->get();
-
+            $departments = $document_model::select('department_name as name')->groupBy('department_name')->get();
+            // Mendpatkan data document type
+            $documenttypes = $document_model::select('document_type_name as name')->groupBy('document_type_name')->get();
             // Mendapatkan data lokasi dokumen
             $locations = $document_model::select('location as name')->groupBy('location')->get();
 
@@ -75,8 +76,18 @@ class BackendController extends Controller
             ->get();
 
         } else {
+
             // Mendpatkan data department
-            $departments = $department_model::select('name', 'id')->where('id', $user->department_id)->get();
+            $departments = $document_model::select('department_name as name')
+            ->groupBy('department_name')
+            ->where('user_id', $userId)
+            ->get();
+            // Mendpatkan data document type
+            $documenttypes = $document_model::select('document_type_name as name')
+            ->groupBy('document_type_name')
+            ->where('user_id', $userId)
+            ->get();
+            // Mendapatkan data lokasi dokumen
             $locations = $document_model::select('location as name')->groupBy('location')
             ->where('user_id', $userId)
             ->get();
@@ -176,7 +187,10 @@ class BackendController extends Controller
             $departments = $department_model::select('name', 'id')->get();
 
             // Mendapatkan data count document
-            $total_document = $document_model::count();
+            $total_document = $document_model::Where(function ($query) use($checkbox) {
+                for ($i = 0; $i < count($checkbox ); $i++){
+                      $query->orwhere('department_name', 'like',  '%' . $checkbox [$i] .'%');
+            }})->count();
             $total_active_document = $document_model::where('status', 1)->count();
             $total_waiting_document = $document_model::where('status', 2)->count();
             $total_expired_document = $document_model::where('status', 3)->count();

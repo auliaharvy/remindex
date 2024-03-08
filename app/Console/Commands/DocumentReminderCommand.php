@@ -68,8 +68,8 @@ class DocumentReminderCommand extends Command
 
                 if($reminder_repeat > 0) {
                     // kirim email
-                    $userPic = User::where('id', '=', $document->user_id)->first();
-                    $userPic->notify(new ExpiredDocument($document, $reminder));
+                    $user = User::where('id', '=', $document->user_id)->first();
+                    $user->notify(new ExpiredDocument($document, $reminder));
                 }
             }
 
@@ -81,13 +81,13 @@ class DocumentReminderCommand extends Command
                 $reminder->save();
 
                 $document = Document::findOrFail($reminder->document_id);
-                $document->status = 3;
+                $document->status = 4;
                 $document->save();
 
                 if($reminder_repeat > 0) {
                     // kirim email
-                    $userPic = User::where('id', '=', $document->user_id)->first();
-                    $userPic->notify(new WaitingDocument($document, $reminder));
+                    $user = User::where('id', '=', $document->user_id)->first();
+                    $user->notify(new WaitingDocument($document, $reminder));
                 }
             }
             // Kirim email pengingat

@@ -17,6 +17,7 @@ use Modules\Document\Events\NewDocumentCreated;
 use Modules\Document\Notifications\DocumentCreated;
 use Modules\Comment\Notifications\NewCommentAdded;
 use App\Notifications\NewUserDocumentCreated;
+use App\Notifications\NewUserDocumentCreatedWithoutSchedule;
 use Modules\Category\Models\Category;
 use Modules\Department\Models\Department;
 use Modules\DocumentType\Models\DocumentType;
@@ -129,7 +130,7 @@ class DocumentsController extends BackendBaseController
         $title = $page_heading.' '.label_case($module_action);
 
         $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name',
-        'document_type_name','description','updated_at', 'created_by')->with('document_schedules');
+        'document_type_name','description', 'file','updated_at', 'created_by')->with('document_schedules');
 
         $data = $$module_name;
 
@@ -146,11 +147,19 @@ class DocumentsController extends BackendBaseController
                         break;
 
                     case '2':
-                        $return_string = '<span class="badge bg-warning text-dark">Waiting</span>';
+                        $return_string = '<span class="badge bg-warning text-dark">To be Process</span>';
                         break;
 
                     case '3':
+                        $return_string = '<span class="badge bg-warning text-dark">On Process</span>';
+                        break;
+
+                    case '4':
                         $return_string = '<span class="badge bg-danger">Expired</span>';
+                        break;
+
+                    case '5':
+                        $return_string = '<span class="badge bg-danger">Without Expiration</span>';
                         break;
 
                     default:
@@ -179,7 +188,16 @@ class DocumentsController extends BackendBaseController
                 }
             })
             ->editColumn('schedule_date', '<strong>{{$schedule_date}}</strong>')
-            ->editColumn('name', '<strong>{{$name}}</strong>')
+            ->editColumn('name', function ($data) {
+                if ($data->file) {
+                    $fileUrl = url("uploads/$data->file");
+                    $return_string = "<a href='$fileUrl' data-toggle='tooltip' title='Download File'><strong>{$data->name}</strong></a>";
+                    return $return_string;
+                } else {
+                    $return_string = "<strong>{$data->name}</strong>";
+                    return $return_string;
+                }
+            })
             ->editColumn('updated_at', function ($data) {
                 $module_name = $this->module_name;
 
@@ -244,73 +262,139 @@ class DocumentsController extends BackendBaseController
 
         try {
             DB::beginTransaction();
-            // Validasi input
-            $validatedData = $request->validate([
-                'name' => 'required|string|max:255',
-                'document_type_id' => 'required|exists:document_types,id',
-                'department_id' => 'required|exists:departments,id',
-                'description' => 'nullable|string',
-                'expiration_date' => 'required|date',
-                'reminder_day' => 'required|integer',
-                'reminder_repeat' => 'required|integer',
-                'reminder_interval' => 'required|integer',
-                'user_id' => 'required|string',
-                'pic_list' => 'nullable|array',
-                'file' => 'nullable|string',
-                'location' => 'nullable|string',
-                'description' => 'nullable|string',
-            ]);
 
-            // Mendapatkan kode dokumen
-            $document_count = Counter::firstOrCreate(['year' => now()->year])->counter;
-            Counter::where('year', now()->year)->increment('counter');
-            $code = "DOC-".now()->year."-".$document_count;
-
-            // Buat dokumen baru
-            $document = Document::create([
-                'user_id' => $validatedData['user_id'],
-                'document_type_id' => $validatedData['document_type_id'],
-                'department_id' => $validatedData['department_id'],
-                'file' => $validatedData['file'],
-                'code' => $code,
-                'name' => $validatedData['name'],
-                'location' => $validatedData['location'],
-                'description' => $validatedData['description'],
-                'status' => 1,
-            ]);
-
-            $date = Carbon::parse($validatedData['expiration_date']);
-            $dateWithTime = $date->startOfDay();
-
-            // Buat jadwal dokumen
-            $schedule = DocumentSchedule::create([
-                'document_id' => $document->id,
-                'schedule_timestamp' => $dateWithTime,
-                'schedule_date' => $validatedData['expiration_date'],
-                'reminder_day' => $validatedData['reminder_day'],
-                'reminder_repeat' => $validatedData['reminder_repeat'],
-                'reminder_interval' => $validatedData['reminder_interval'],
-            ]);
-
-            $user = User::where('id', '=', $validatedData['user_id'])->first();
-            // Mail::to($user)
-            // ->send(new NewUserDocumentCreated($document));
-
-            $user->notify(new NewUserDocumentCreated($document, $schedule));
-            // $user->sendEmailVerificationNotification();
-            // $user = auth()->user();
-            // $user->notify(new NewUserDocumentCreated($document));
-            // auth()->user()->notify(new NewCommentAdded('Comment'));
-
-            // Buat penugasan PIC
-            foreach ($validatedData['pic_list'] as $userPicId) {
-                SchedulePic::create([
-                    'document_schedule_id' => $schedule->id,
-                    'user_pic_id' => $userPicId,
+            if($request->expiration_date){
+                // Validasi input
+                $validatedData = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'document_type_id' => 'required|exists:document_types,id',
+                    'department_id' => 'required|exists:departments,id',
+                    'description' => 'nullable|string',
+                    'expiration_date' => 'required|date',
+                    'reminder_day' => 'required|integer',
+                    'reminder_repeat' => 'required|integer',
+                    'reminder_interval' => 'required|integer',
+                    'user_id' => 'required|string',
+                    'pic_list' => 'nullable|array',
+                    // 'file' => 'nullable|string',
+                    'location' => 'nullable|string',
+                    'source' => 'nullable|string',
+                    'is_used' => 'nullable|integer',
+                    'is_expired' => 'nullable|integer',
+                    'description' => 'nullable|string',
                 ]);
-                $userPic = User::where('id', '=', $userPicId)->first();
-                $userPic->notify(new NewUserDocumentCreated($document, $schedule));
+
+                // Mendapatkan kode dokumen
+                $document_count = Counter::firstOrCreate(['year' => now()->year])->counter;
+                Counter::where('year', now()->year)->increment('counter');
+                $code = "DOC-".now()->year."-".$document_count;
+                $reminder_gap = Carbon::now()->diffInDays($validatedData['expiration_date']);
+                $today = Carbon::now();
+                if($reminder_gap < $validatedData['reminder_day'] ) {
+                    $status = 2;
+                } elseif($validatedData['expiration_date'] <  $today) {
+                    $status = 4;
+                } else{
+                    $status = 1;
+                }
+                // Buat dokumen baru
+                $document = Document::create([
+                    'user_id' => $validatedData['user_id'],
+                    'document_type_id' => $validatedData['document_type_id'],
+                    'department_id' => $validatedData['department_id'],
+                    // 'file' => $validatedData['file'],
+                    'code' => $code,
+                    'name' => $validatedData['name'],
+                    'location' => $validatedData['location'],
+                    'description' => $validatedData['description'],
+                    'source' => $validatedData['source'],
+                    'is_used' => $validatedData['is_used'],
+                    'is_expired' => 0,
+                    'status' => $status,
+                ]);
+
+                $date = Carbon::parse($validatedData['expiration_date']);
+                $dateWithTime = $date->startOfDay();
+                $nextRemindAt = Carbon::now()->subDays($validatedData['reminder_day']);
+                $reminder_gap = Carbon::now()->diffInDays($validatedData['expiration_date']);
+
+
+                // Buat jadwal dokumen
+                $schedule = DocumentSchedule::create([
+                    'document_id' => $document->id,
+                    'schedule_timestamp' => $dateWithTime,
+                    'schedule_date' => $validatedData['expiration_date'],
+                    'reminder_day' => $validatedData['reminder_day'],
+                    'reminder_repeat' => $validatedData['reminder_repeat'],
+                    'reminder_interval' => $validatedData['reminder_interval'],
+                    'next_reminder' => $nextRemindAt,
+                ]);
+
+                $user = User::where('id', '=', $validatedData['user_id'])->first();
+                // Mail::to($user)
+                // ->send(new NewUserDocumentCreated($document));
+
+                $user->notify(new NewUserDocumentCreated($document, $schedule));
+                // $user->sendEmailVerificationNotification();
+                // $user = auth()->user();
+                // $user->notify(new NewUserDocumentCreated($document));
+                // auth()->user()->notify(new NewCommentAdded('Comment'));
+
+                // Buat penugasan PIC
+                foreach ($validatedData['pic_list'] as $userPicId) {
+                    SchedulePic::create([
+                        'document_schedule_id' => $schedule->id,
+                        'user_pic_id' => $userPicId,
+                    ]);
+                    $userPic = User::where('id', '=', $userPicId)->first();
+                    $userPic->notify(new NewUserDocumentCreated($document, $schedule));
+                }
+            } else {
+                // Validasi input
+                $validatedData = $request->validate([
+                    'name' => 'required|string|max:255',
+                    'document_type_id' => 'required|exists:document_types,id',
+                    'department_id' => 'required|exists:departments,id',
+                    'description' => 'nullable|string',
+                    'user_id' => 'required|string',
+                    'file' => 'nullable|string',
+                    'location' => 'nullable|string',
+                    'source' => 'nullable|string',
+                    'is_used' => 'nullable|integer',
+                ]);
+
+                // Mendapatkan kode dokumen
+                $document_count = Counter::firstOrCreate(['year' => now()->year])->counter;
+                Counter::where('year', now()->year)->increment('counter');
+                $code = "DOC-".now()->year."-".$document_count;
+
+                // Buat dokumen baru
+                $document = Document::create([
+                    'user_id' => $validatedData['user_id'],
+                    'document_type_id' => $validatedData['document_type_id'],
+                    'department_id' => $validatedData['department_id'],
+                    // 'file' => $validatedData['file'],
+                    'code' => $code,
+                    'name' => $validatedData['name'],
+                    'location' => $validatedData['location'],
+                    'description' => $validatedData['description'],
+                    'source' => $validatedData['source'],
+                    'is_used' => $validatedData['is_used'],
+                    'is_expired' => 1,
+                    'status' => 5,
+                ]);
+
+                $user = User::where('id', '=', $validatedData['user_id'])->first();
+                $user->notify(new NewUserDocumentCreatedWithoutSchedule($document));
             }
+
+            if ($request->file) {
+                $fileName = time().'.'.$request->file->extension();
+                $request->file->move(public_path('uploads'), $fileName);
+                $document->file = $fileName;
+                $document->save();
+            }
+
 
             DB::commit();
             // Berikan respons sukses
@@ -344,30 +428,42 @@ class DocumentsController extends BackendBaseController
         $module_action = 'Show';
 
         $$module_name_singular = $module_model::findOrFail($id);
-        // get data document shcedule
-        $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
-        // get data document PIC
-        $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
 
-        // data schedule
-        $referenceDate = Carbon::parse($documentSchedule->schedule_date);
-        $today = Carbon::today();
-        $diffInDays = $referenceDate->diffInDays($today, false);
-            // Check for negative value
-        if ($diffInDays < 0) {
-            $outputScheduleDate =  abs($diffInDays)." Hari Menuju expired"; // Absolute value for formatting
+        if($$module_name_singular->is_expired == 0) {
+             // get data document shcedule
+            $documentSchedule = DocumentSchedule::where('document_id', $$module_name_singular->id)->first();
+            // get data document PIC
+            $documentPic = SchedulePic::where('document_schedule_id', $documentSchedule->id)->with('userPic')->get();
+
+            // data schedule
+            $referenceDate = Carbon::parse($documentSchedule->schedule_date);
+            $today = Carbon::today();
+            $diffInDays = $referenceDate->diffInDays($today, false);
+                // Check for negative value
+            if ($diffInDays < 0) {
+                $outputScheduleDate =  abs($diffInDays)." Hari Menuju expired"; // Absolute value for formatting
+            } else {
+                $outputScheduleDate = abs($diffInDays)." Hari Lewat expired";
+            }
+                // Format with desired units
+            $formattedExpired = $referenceDate->format('Y-m-d') . " ( $outputScheduleDate )";
+
+            Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
+
+            return view(
+                "document::backend.{$module_name}.show",
+                compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action', "{$module_name_singular}", 'formattedExpired', 'documentPic', 'documentSchedule')
+            );
         } else {
-            $outputScheduleDate = abs($diffInDays)." Hari Lewat expired";
+            Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
+
+            return view(
+                "document::backend.{$module_name}.show",
+                compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action', "{$module_name_singular}")
+            );
         }
-            // Format with desired units
-        $formattedExpired = $referenceDate->format('Y-m-d') . " ( $outputScheduleDate )";
 
-        Log::info(label_case($module_title.' '.$module_action).' | User:'.Auth::user()->name.'(ID:'.Auth::user()->id.')');
 
-        return view(
-            "document::backend.{$module_name}.show",
-            compact('module_title', 'module_name', 'module_icon', 'module_name_singular', 'module_action', "{$module_name_singular}", 'formattedExpired', 'documentPic', 'documentSchedule')
-        );
     }
 
     /**
@@ -611,6 +707,46 @@ class DocumentsController extends BackendBaseController
      * @return Response
      */
     public function renew_document(Request $request)
+    {
+
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        try {
+            DB::beginTransaction();
+
+            // Buat penugasan PIC
+            foreach ($request->pic_list as $userPicId) {
+                SchedulePic::create([
+                    'document_schedule_id' => $request->document_shcedule_id,
+                    'user_pic_id' => $userPicId,
+                ]);
+            }
+
+            DB::commit();
+            // Berikan respons sukses
+            Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' PIC Assign")->important();
+            Log::info(label_case("Assign Document PIC")." | '' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back();
+            // Berikan respons sukses
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error(label_case("Assign Document PIC")." | Error Creating Assign PIC Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
+        }
+    }
+
+    /**
+     * Renew schedule in Document.
+     *
+     * @param  Request  $request
+     * @return Response
+     */
+    public function progress_document(Request $request)
     {
 
         $module_title = $this->module_title;

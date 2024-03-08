@@ -56,10 +56,10 @@
                                 @lang("document::text.status")
                                 </th>
                                 <th>
-                                @lang("document::text.document_type")
+                                    @lang("document::text.department")
                                 </th>
                                 <th>
-                                    @lang("document::text.department")
+                                @lang("document::text.document_type")
                                 </th>
                                 <th>
                                     @lang("document::text.expired")
@@ -117,6 +117,7 @@
             },
             {
                 data: 'status',
+                searchable: true,
                 name: 'status'
             },
             {
@@ -142,5 +143,6 @@
             }
         ]
     });
+
 </script>
 @endpush

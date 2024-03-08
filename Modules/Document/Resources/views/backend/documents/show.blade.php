@@ -23,18 +23,24 @@
                 @lang(":module_name Management Dashboard", ['module_name'=>Str::title($module_name)])
             </x-slot>
             <x-slot name="toolbar">
-                <x-backend.buttons.return-back />
-                @if ($$module_name_singular->created_by == auth()->user()->id)
+                <x-backend.buttons.return-back small />
+
                 <div class="float-end">
-                @can('edit_'.$module_name)
-                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-lg mt-1 text-white" data-toggle="tooltip" title="Edit Document"><i class="fas fa-pencil"></i></a>
-                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-lg mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-refresh"></i></a>
-                @endcan
-                @can('delete_'.$module_name)
-                    <a href='{{route("backend.$module_name.destroy", $$module_name_singular)}}' class="btn btn-danger btn-lg mt-1 text-white" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
-                @endcan
+                    @can('edit_'.$module_name)
+                    @if ($$module_name_singular->created_by == auth()->user()->id || $$module_name_singular->user_id == auth()->user()->id)
+                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-sm mt-1 text-white" data-toggle="tooltip" title="Edit Document"><i class="fas fa-pencil"></i></a>
+                    @endif
+                    @if ($$module_name_singular->status != 5)
+                    <a href='{!!route("backend.$module_name.edit", $$module_name_singular)!!}' class="btn btn-info btn-sm mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-refresh"></i></a>
+                    @endcan
+                    @endif
+                    @if ($$module_name_singular->created_by == auth()->user()->id || $$module_name_singular->user_id == auth()->user()->id)
+                    @can('delete_'.$module_name)
+                    <a href='{{route("backend.$module_name.destroy", $$module_name_singular)}}' class="btn btn-danger btn-sm mt-1 text-white" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
+                    @endcan
+                    @endif
                 </div>
-                @endif
+
             </x-slot>
         </x-backend.section-header>
 
@@ -67,11 +73,11 @@
                         <tr>
                             <td>
                                 <strong>
-                                    {{ __(label_case("ID")) }}
+                                    {{ __(label_case("Code")) }}
                                 </strong>
                             </td>
                             <td>
-                                {!! __(label_case($$module_name_singular->id)) !!}
+                                {!! $$module_name_singular->code !!}
                             </td>
                         </tr>
                         <tr>
@@ -107,6 +113,16 @@
                         <tr>
                             <td>
                                 <strong>
+                                    {{ __(label_case("Source")) }}
+                                </strong>
+                            </td>
+                            <td>
+                                {!! __(label_case($$module_name_singular->source)) !!}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>
                                     {{ __(label_case("Owner")) }}
                                 </strong>
                             </td>
@@ -117,11 +133,23 @@
                         <tr>
                             <td>
                                 <strong>
+                                    {{ __(label_case("Description")) }}
+                                </strong>
+                            </td>
+                            <td>
+                                {!! __(label_case($$module_name_singular->description)) !!}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <strong>
                                     {{ __(label_case("Expired At")) }}
                                 </strong>
                             </td>
                             <td>
-                                {!! __(label_case($formattedExpired)) !!}
+                                @if ($$module_name_singular->is_expired == 0)
+                                    {!! $formattedExpired !!}
+                                @endif
                             </td>
                         </tr>
                         <tr>
@@ -144,14 +172,14 @@
 
 
             </div>
+            @if ($$module_name_singular->is_expired == 0)
             <div class="col-12 col-sm-6">
-
                 <hr>
                 <div class="row">
                     <div class="col-12 col-sm-6 mb-3">
                         <h4>PIC List</h4>
                         @if ($$module_name_singular->created_by == auth()->user()->id)
-                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal"><i
+                        <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal"><i
                                 class="fa fa-plus"></i></button>
                         @endif
                     </div>
@@ -195,10 +223,12 @@
                 </table>
                 <hr>
             </div>
+            @endif
         </div>
     </div>
 
     {{-- modal add pic --}}
+    @if ($$module_name_singular->is_expired == 0)
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -231,6 +261,7 @@
             </div>
         </div>
     </div>
+    @endif
 
     <div class="card-footer">
         <div class="row">

@@ -1,4 +1,4 @@
-<form id="filter-form">
+<form id="filter-form" method='get'>
 {{ csrf_field() }}
 <button type="submit">Filter</button>
 <div class="col-12 col-sm-12">

@@ -6,7 +6,7 @@
             $field_lable = label_case('Document Type');
             $field_relation = "document_type";
             $field_placeholder = $field_lable;
-            $required = "";
+            $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->select($field_name, isset($document_type)?optional($document_type)->pluck('name', 'id'):'')->placeholder($field_placeholder)->class('form-control select2-document-type')->attributes(["$required"]) }}
@@ -20,7 +20,21 @@
             $field_name = 'name';
             $field_lable = label_case($field_name);
             $field_placeholder = $field_lable;
-            $required = "";
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="form-group">
+            <?php
+            $field_name = 'source';
+            $field_lable = label_case($field_name);
+            $field_placeholder = $field_lable;
+            $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
@@ -49,7 +63,7 @@
             $field_lable = label_case("Owner");
             $field_relation = "user_id";
             $field_placeholder = $field_lable;
-            $required = "";
+            $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$user_id):'')->placeholder($field_placeholder)->class('form-control select2-users')->attributes(["$required"]) }}
@@ -63,7 +77,7 @@
             $field_lable = label_case("Department");
             $field_relation = "department_id";
             $field_placeholder = $field_lable;
-            $required = "";
+            $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$department_id):'')->placeholder($field_placeholder)->class('form-control select2-departments')->attributes(["$required"]) }}
@@ -75,20 +89,16 @@
         <div class="form-group">
             <?php
             $field_name = 'file';
-            $field_lable = label_case($field_name);;
-            $field_placeholder = $field_lable;
+            $field_lable = label_case($field_name);
+            $field_placeholder = "Upload File";
             $required = "";
             ?>
-            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
-            <div class="input-group">
-                {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required", 'aria-label'=>'Image', 'aria-describedby'=>'button-image']) }}
-                <div class="input-group-append">
-                    <button class="btn btn-info" type="button" id="button-image" data-input="{{$field_name}}"><i class="fas fa-folder-open"></i> @lang('Browse')</button>
-                </div>
-            </div>
+            {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! fielf_required($required) !!}
+            {{ html()->input("file", $field_name)->class('form-control')->attributes(["$required"]) }}
         </div>
     </div>
 </div>
+
 <div class="row mb-3">
     <div class="col-12">
         <div class="form-group">
@@ -96,10 +106,28 @@
             $field_name = 'location';
             $field_lable = label_case($field_name);
             $field_placeholder = $field_lable;
-            $required = "";
+            $required = "required";
             ?>
             {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
             {{ html()->text($field_name)->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="form-group">
+            <?php
+            $field_name = 'is_used';
+            $field_lable = label_case($field_name);
+            $field_placeholder = __("Select an option");
+            $required = "required";
+            $select_options = [
+                '0' => 'Yes',
+                '1' => 'No',
+            ];
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->select($field_name, $select_options)->placeholder($field_placeholder)->class('form-select')->attributes(["$required"]) }}
         </div>
     </div>
 </div>
@@ -217,7 +245,6 @@
             contents: '<i class="note-icon-picture"></i> ',
             tooltip: 'Insert image with filemanager',
             click: function() {
-
                 lfm({
                     type: 'image',
                     prefix: '/laravel-filemanager'
@@ -251,7 +278,7 @@
 
 <script type="module" src="{{ asset('vendor/laravel-filemanager/js/stand-alone-button.js') }}"></script>
 <script type="module">
-    $('#button-image').filemanager('image');
+    $('#button-image').filemanager();
 </script>
 
 <script type="module">

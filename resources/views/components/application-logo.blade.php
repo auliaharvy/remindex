@@ -1,1 +1,1 @@
-<img src="{{asset('img/remindex_logo.png')}}" style="height: 50px;">
+<img src="{{asset('img/scjohnson.png')}}" style="height: 100px;">

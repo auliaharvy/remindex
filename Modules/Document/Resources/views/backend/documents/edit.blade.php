@@ -29,7 +29,7 @@
 
         <div class="row mt-4">
             <div class="col">
-                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.renew.update", $$module_name_singular))->class('form')->open() }}
+                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.update", $$module_name_singular))->class('form')->open() }}
                 <div class="row mb-3">
                     <div class="col-12">
                         <div class="form-group">
