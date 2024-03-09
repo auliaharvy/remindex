@@ -38,10 +38,6 @@ class BackendController extends Controller
         $documenttype_model = $this->documenttype_model;
         $document_model = $this->document_model;
 
-        // Mendpatkan data document Type
-
-
-
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
             $departments = $document_model::select('department_name as name')->groupBy('department_name')->get();
@@ -51,14 +47,22 @@ class BackendController extends Controller
             $locations = $document_model::select('location as name')->groupBy('location')->get();
 
             // Mendapatkan data count document
-            $total_document = $document_model::count();
-            $total_active_document = $document_model::where('status', 1)->count();
-            $total_waiting_document = $document_model::where('status', 2)->count();
-            $total_expired_document = $document_model::where('status', 3)->count();
+            $used_document = $document_model::where('deleted_at', null)->where('is_used', 0)->count();
+            $unused_document = $document_model::where('deleted_at', null)->where('is_used', 1)->count();
+            $with_expired_document = $document_model::where('deleted_at', null)->where('is_expired',0)->count();
+            $without_expired_document = $document_model::where('deleted_at', null)->where('is_expired',1)->count();
+            $total_active_document = $document_model::where('status', 1)->where('deleted_at', null)->count();
+            $total_to_process_document = $document_model::where('status', 2)->where('deleted_at', null)->count();
+            $total_on_process_document = $document_model::where('status', 3)->where('deleted_at', null)->count();
+            $total_expired_document = $document_model::where('status', 4)->where('deleted_at', null)->count();
             $count_document = [
-                'total' => $total_document,
+                'used_document' => $used_document,
+                'unused_document' => $unused_document,
+                'with_expired' => $with_expired_document,
+                'without_expired' => $without_expired_document,
                 'active' => $total_active_document,
-                'waiting' => $total_waiting_document,
+                'to_process' => $total_to_process_document,
+                'on_process' => $total_on_process_document,
                 'expired' => $total_expired_document,
             ];
 
@@ -78,67 +82,194 @@ class BackendController extends Controller
         } else {
 
             // Mendpatkan data department
-            $departments = $document_model::select('department_name as name')
-            ->groupBy('department_name')
-            ->where('user_id', $userId)
+            $departments = $document_model::select('documents.department_name as name')
+            ->leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->groupBy('documents.department_name')
+            ->orWhere('documents.user_id', $userId)
+            ->orWhere('schedule_pics.user_pic_id', $userId)
             ->get();
+
             // Mendpatkan data document type
-            $documenttypes = $document_model::select('document_type_name as name')
-            ->groupBy('document_type_name')
-            ->where('user_id', $userId)
+            $documenttypes = $document_model::select('documents.document_type_name as name')
+            ->leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->groupBy('department_name')
+            ->orWhere('documents.user_id', $userId)
+            ->orWhere('schedule_pics.user_pic_id', $userId)
+            ->groupBy('documents.document_type_name')
             ->get();
+
             // Mendapatkan data lokasi dokumen
-            $locations = $document_model::select('location as name')->groupBy('location')
-            ->where('user_id', $userId)
+            $locations = $document_model::select('location as name')
+            ->leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->groupBy('documents.location')
+            ->orWhere('documents.user_id', $userId)
+            ->orWhere('schedule_pics.user_pic_id', $userId)
             ->get();
 
-            // Mendapatkan data count document
-            $total_document = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
-                ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-                ->where('documents.user_id', $userId)
-                ->where('schedule_pics.user_pic_id', $userId)
-                ->count();
+            // Mendapatkan data count used document
+            $pic_used_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_used', 0)
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->count();
 
-            $total_active_document = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
-                ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-                ->where('documents.user_id', $userId)
-                ->where('schedule_pics.user_pic_id', $userId)
-                ->where('documents.status', 1)
-                ->count();
+            $owner_used_document = $document_model::where('documents.deleted_at', null)
+            ->where('documents.is_used', 0)
+            ->where('documents.user_id', $userId)
+            ->count();
 
-            $total_waiting_document = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
-                ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-                ->where('documents.user_id', $userId)
-                ->where('schedule_pics.user_pic_id', $userId)
-                ->where('documents.status', 2)
-                ->count();
+            $used_document = $pic_used_document + $owner_used_document;
 
-            $total_expired_document = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
-                ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-                ->where('documents.user_id', $userId)
-                ->where('schedule_pics.user_pic_id', $userId)
-                ->where('documents.status', 3)
-                ->count();
+            // Mendapatkan data count unused document
+            $pic_unused_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_used', 1)
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->count();
+
+            $owner_unused_document = $document_model::where('documents.deleted_at', null)
+            ->where('documents.is_used', 1)
+            ->where('documents.user_id', $userId)
+            ->count();
+
+            $unused_document = $pic_unused_document + $owner_unused_document;
+
+            // Mendapatkan data count with expired document
+            $pic_with_expired_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_expired',0)
+            ->count();
+
+            $owner_with_expired_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_expired',0)
+            ->count();
+
+            $with_expired_document = $pic_with_expired_document + $owner_with_expired_document;
+
+            // Mendapatkan data count without expired document
+            $pic_without_expired_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_expired',1)
+            ->count();
+
+            $owner_without_expired_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_expired',1)
+            ->count();
+
+            $without_expired_document = $pic_without_expired_document + $owner_without_expired_document;
+
+            // Mendapatkan data count without expired document
+            $pic_total_active_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.status', 1)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $owner_total_active_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.status', 1)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $total_active_document = $pic_total_active_document + $owner_total_active_document;
+
+            // Mendapatkan data count without expired document
+            $pic_total_to_process_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.status', 2)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $owner_total_to_process_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.status', 2)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $total_to_process_document = $pic_total_to_process_document + $owner_total_to_process_document;
+
+            // Mendapatkan data count without expired document
+            $pic_total_on_process_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.status', 3)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $owner_total_on_process_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.status', 3)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $total_on_process_document = $pic_total_on_process_document + $owner_total_on_process_document;
+
+            // Mendapatkan data count without expired document
+            $pic_total_expired_document = $document_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
+                $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
+            })
+            ->where('documents.status', 4)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $owner_total_expired_document = $document_model::where('documents.user_id', $userId)
+            ->where('documents.status', 4)
+            ->where('documents.deleted_at', null)
+            ->count();
+
+            $total_expired_document = $pic_total_expired_document + $owner_total_expired_document;
 
             $count_document = [
-                'total' => $total_document,
+                'used_document' => $used_document,
+                'unused_document' => $unused_document,
+                'with_expired' => $with_expired_document,
+                'without_expired' => $without_expired_document,
                 'active' => $total_active_document,
-                'waiting' => $total_waiting_document,
+                'to_process' => $total_to_process_document,
+                'on_process' => $total_on_process_document,
                 'expired' => $total_expired_document,
             ];
 
             // Mendapatkan data forecast document
-            $forecast_data = DocumentSchedule::join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-            ->join('documents', 'document_schedules.document_id', '=', 'documents.id')
-            ->where('schedule_pics.user_pic_id', auth()->id())
-            ->where('documents.user_id', auth()->id())
+            $forecast_data = DocumentSchedule::leftJoin('schedule_pics', function ($join) {
+                $join->on('document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+                     ->orWhere('schedule_pics.user_pic_id', auth()->id());  // Filter within the join itself
+            })
+            ->leftJoin('documents', 'document_schedules.document_id', '=', 'documents.id')
+            ->orWhere('documents.user_id', auth()->id())
             ->select(
+                'documents.id',  // Included in GROUP BY
                 DB::raw('YEAR(schedule_date) AS year'),
                 DB::raw('MONTH(schedule_date) AS month'),
-                DB::raw('COUNT(DISTINCT documents.id) AS total_documents') // Menggunakan COUNT(DISTINCT) untuk menghitung dokumen yang unik
+                DB::raw('COUNT(*) AS total_documents')
             )
-            // ->whereIn(DB::raw('YEAR(schedule_date)'), [date('Y'), date('Y') + 1])
-            ->groupBy(DB::raw('YEAR(schedule_date)'), DB::raw('MONTH(schedule_date)'))
+            ->groupBy('documents.id', DB::raw('YEAR(schedule_date)'), DB::raw('MONTH(schedule_date)'))  // Group by document ID, year, and month
             ->orderBy(DB::raw('YEAR(schedule_date)'), 'asc')
             ->orderBy(DB::raw('MONTH(schedule_date)'), 'asc')
             ->get();
@@ -295,8 +426,13 @@ class BackendController extends Controller
         $document_model = $this->document_model;
 
         $documents = $document_model::join('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
-            ->select('documents.name', 'documents.status','document_schedules.schedule_date')
-            ->get();
+        ->join('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+        ->select('documents.name', 'documents.status','document_schedules.schedule_date')
+        ->orWhere('documents.user_id', auth()->id())
+        ->orWhere('schedule_pics.user_pic_id', auth()->id())
+        ->where('documents.deleted_at', null)
+        ->where('documents.is_expired',0)
+        ->get();
 
         // Transformasi data sesuai dengan format yang diinginkan
         $events = $documents->map(function ($document) {

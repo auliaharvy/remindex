@@ -7,7 +7,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Used Document</div>
-                    <div class="fs-6 fw-semibold text-info">{{ $count_document['total'] }}</div>
+                    <div class="fs-6 fw-semibold text-info">{{ $count_document['used_document'] }}</div>
                 </div>
             </div>
         </div>
@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Unused Document</div>
-                    <div class="fs-6 fw-semibold text-danger">{{ $count_document['active'] }}</div>
+                    <div class="fs-6 fw-semibold text-danger">{{ $count_document['unused_document'] }}</div>
                 </div>
             </div>
         </div>
@@ -37,7 +37,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">With Expired</div>
-                    <div class="fs-6 fw-semibold text-info">{{ $count_document['total'] }}</div>
+                    <div class="fs-6 fw-semibold text-info">{{ $count_document['with_expired'] }}</div>
                 </div>
             </div>
         </div>
@@ -51,7 +51,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">Without Expired</div>
-                    <div class="fs-6 fw-semibold text-danger">{{ $count_document['active'] }}</div>
+                    <div class="fs-6 fw-semibold text-danger">{{ $count_document['without_expired'] }}</div>
                 </div>
             </div>
         </div>
@@ -81,7 +81,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">To Be Process</div>
-                    <div class="fs-6 fw-semibold text-warning">{{ $count_document['total'] }}</div>
+                    <div class="fs-6 fw-semibold text-warning">{{ $count_document['to_process'] }}</div>
                 </div>
             </div>
         </div>
@@ -95,7 +95,7 @@
                 </div>
                 <div>
                     <div class="text-medium-emphasis text-uppercase fw-semibold small">On Process</div>
-                    <div class="fs-6 fw-semibold text-warning">{{ $count_document['waiting'] }}</div>
+                    <div class="fs-6 fw-semibold text-warning">{{ $count_document['on_process'] }}</div>
                 </div>
             </div>
         </div>

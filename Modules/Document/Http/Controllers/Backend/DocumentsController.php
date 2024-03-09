@@ -125,12 +125,25 @@ class DocumentsController extends BackendBaseController
         $module_name_singular = Str::singular($module_name);
 
         $module_action = 'List';
+        $user = auth()->user();
+        $userId = Auth::id();
 
         $page_heading = label_case($module_title);
         $title = $page_heading.' '.label_case($module_action);
 
-        $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name',
-        'document_type_name','description', 'file','updated_at', 'created_by')->with('document_schedules');
+        if ($user->hasRole('super admin')) {
+            $$module_name = $module_model::select('id', 'user_id', 'status', 'code', 'name', 'department_name',
+            'document_type_name','description', 'file','updated_at', 'created_by')
+            ->with('document_schedules');
+        } else {
+            $$module_name = $module_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
+            ->orWhere('documents.user_id', auth()->id())
+            ->orWhere('schedule_pics.user_pic_id', auth()->id())
+            ->where('documents.deleted_at', null)
+            ->where('documents.is_expired',0);
+        }
+
 
         $data = $$module_name;
 
