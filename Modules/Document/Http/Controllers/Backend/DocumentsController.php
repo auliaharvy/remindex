@@ -28,6 +28,9 @@ use App\Models\DocumentSchedule;
 use App\Models\SchedulePic;
 use Modules\Article\Http\Requests\Backend\PostsRequest;
 use Yajra\DataTables\DataTables;
+use App\Exports\DocumentsExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 
 class DocumentsController extends BackendBaseController
@@ -136,7 +139,9 @@ class DocumentsController extends BackendBaseController
             'document_type_name','description', 'file','updated_at', 'created_by')
             ->with('document_schedules');
         } else {
-            $$module_name = $module_model::leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
+            $$module_name = $module_model::select('documents.id', 'documents.user_id', 'documents.status', 'documents.code', 'documents.name', 'documents.department_name',
+            'documents.document_type_name','documents.description', 'documents.file','documents.updated_at', 'documents.created_by')
+            ->leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
             ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
             ->orWhere('documents.user_id', auth()->id())
             ->orWhere('schedule_pics.user_pic_id', auth()->id())
@@ -829,7 +834,24 @@ class DocumentsController extends BackendBaseController
             $reminder->save();
         }
 
+    }
 
+    /**
+     * Export Document Data.
+     *
+     * @return Response
+     */
+    public function export()
+    {
 
+        $module_title = $this->module_title;
+        $module_name = $this->module_name;
+        $module_path = $this->module_path;
+        $module_icon = $this->module_icon;
+        $module_model = $this->module_model;
+        $module_name_singular = Str::singular($module_name);
+
+        // return redirect()->back();
+        return Excel::download(new DocumentsExport, 'document.xlsx');
     }
 }

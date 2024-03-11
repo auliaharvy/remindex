@@ -63,6 +63,7 @@ Route::group(['namespace' => '\Modules\Document\Http\Controllers\Backend', 'as' 
     Route::resource("$module_name", "$controller_name");
     Route::get("$module_name/{id}/renew", ['as' => "$module_name.renew", 'uses' => "$controller_name@renew"]);
     Route::patch("$module_name/{id}/renew", ['as' => "$module_name.renew.update", 'uses' => "$controller_name@renew_update"]);
+    Route::get("$module_name/export", ['as' => "$module_name.export", 'uses' => "$controller_name@export_document"]);
 
     Route::get("$module_name/delete-pic/{id}", ['as' => "$module_name.delete.pic", 'uses' => "$controller_name@deletePic"]);
     Route::post("$module_name/add-pic", ['as' => "$module_name.add_pic", 'uses' => "$controller_name@add_pic"]);

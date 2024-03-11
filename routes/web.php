@@ -31,6 +31,7 @@ Route::group(['middleware' => ['auth']], function () {
     Route::post('dashboard-filter', 'App\Http\Controllers\Backend\BackendController@index_filter')->name('dashboard-filter');
     Route::get('/', 'App\Http\Controllers\Backend\BackendController@index')->name('index');
     Route::get('/calendar-event', 'App\Http\Controllers\Backend\BackendController@calendar_event')->name('calendar-event');
+    Route::get('documents/export', 'Modules\Document\Http\Controllers\Backend\DocumentsController@export')->name('document-export');
 });
 
 // Route::get('dashboard', 'App\Http\Controllers\Backend\BackendController@index')->name('dashboard');
