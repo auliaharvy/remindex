@@ -114,6 +114,7 @@ class BackendController extends Controller
             ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
             ->where('documents.deleted_at', null)
             ->where('documents.is_used', 0)
+            ->where('documents.user_id', '!=', $userId)
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
@@ -131,6 +132,7 @@ class BackendController extends Controller
             ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
             ->where('documents.deleted_at', null)
             ->where('documents.is_used', 1)
+            ->where('documents.user_id', '!=', $userId)
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
@@ -149,6 +151,7 @@ class BackendController extends Controller
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.deleted_at', null)
             ->where('documents.is_expired',0)
             ->count();
@@ -167,6 +170,7 @@ class BackendController extends Controller
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
             ->where('documents.deleted_at', null)
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.is_expired',1)
             ->count();
 
@@ -183,6 +187,7 @@ class BackendController extends Controller
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.status', 1)
             ->where('documents.deleted_at', null)
             ->count();
@@ -200,6 +205,7 @@ class BackendController extends Controller
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.status', 2)
             ->where('documents.deleted_at', null)
             ->count();
@@ -217,6 +223,7 @@ class BackendController extends Controller
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.status', 3)
             ->where('documents.deleted_at', null)
             ->count();
@@ -234,6 +241,7 @@ class BackendController extends Controller
             ->whereHas('document_schedules', function($query) use ($userId) {  // Assuming a relationship named 'documentSchedules'
                 $query->where('schedule_pics.user_pic_id', $userId);  // Filter documentSchedules with matching user_pic_id
             })
+            ->where('documents.user_id', '!=', $userId)
             ->where('documents.status', 4)
             ->where('documents.deleted_at', null)
             ->count();
@@ -259,10 +267,10 @@ class BackendController extends Controller
             // Mendapatkan data forecast document
             $forecast_data = DocumentSchedule::leftJoin('schedule_pics', function ($join) {
                 $join->on('document_schedules.id', '=', 'schedule_pics.document_schedule_id')
-                     ->orWhere('schedule_pics.user_pic_id', auth()->id());  // Filter within the join itself
+                     ->where('schedule_pics.user_pic_id', auth()->id());  // Filter within the join itself
             })
             ->leftJoin('documents', 'document_schedules.document_id', '=', 'documents.id')
-            ->orWhere('documents.user_id', auth()->id())
+            ->where('documents.user_id', auth()->id())
             ->select(
                 'documents.id',  // Included in GROUP BY
                 DB::raw('YEAR(schedule_date) AS year'),
