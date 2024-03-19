@@ -25,7 +25,7 @@
                 @can('add_'.$module_name)
                 <x-buttons.create route='{{ route("backend.$module_name.create") }}' title="{{__('Create')}} {{ ucwords(Str::singular($module_name)) }}" />
                 @endcan
-                <a href='{!!route("document-export")!!}' class="btn btn-info mt-1 text-white" data-toggle="tooltip" title="Renew Document"><i class="fas fa-download"></i></a>
+                <a href='{!!route("document-export")!!}' class="btn btn-info mt-1 text-white" data-toggle="tooltip" title="Export Document"><i class="fas fa-download"></i></a>
                 @can('restore_'.$module_name)
                 <div class="btn-group">
                     <button class="btn btn-secondary dropdown-toggle" type="button" data-coreui-toggle="dropdown" aria-expanded="false">
