@@ -44,7 +44,7 @@ class BackendController extends Controller
 
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
-            $departments = $document_model::select('department_name as name')->groupBy('department_name')->get();
+            $departments = $department_model::select('name')->get();
             // Mendpatkan data document type
             $documenttypes = $document_model::select('document_type_name as name')->groupBy('document_type_name')->get();
             // Mendapatkan data lokasi dokumen
@@ -356,20 +356,26 @@ class BackendController extends Controller
         $document_model = $this->document_model;
 
         // access department checkbox
-        $selectedDepartments = $request->input('departments_select', []);
-        session()->put('selected_departments', $selectedDepartments);
+        if($request->departments_select) {
+            $selectedDepartments = $request->input('departments_select', []);
+            session()->put('selected_departments', $selectedDepartments);
+        }
 
         // access document type checkbox
-        $selectedDocumenttypes = $request->input('documenttypes_select', []);
-        session()->put('selected_documenttypes', $selectedDocumenttypes);
+        if($request->documenttypes_select) {
+            $selectedDocumenttypes = $request->input('documenttypes_select', []);
+            session()->put('selected_documenttypes', $selectedDocumenttypes);
+        }
 
         // access document type checkbox
-        $selectedLocations = $request->input('locations_select', []);
-        session()->put('selected_locations', $selectedLocations);
+        if($request->locations_select) {
+            $selectedLocations = $request->input('locations_select', []);
+            session()->put('selected_locations', $selectedLocations);
+        }
 
         if ($user->hasRole('super admin')) {
             // Mendpatkan data department
-            $departments = $document_model::select('department_name as name')->groupBy('department_name')->get();
+            $departments = $department_model::select('name')->get();
 
             // Mendpatkan data document type
             $documenttypes = $document_model::when($request->has('departments_select'), function($query) use ($request) {

@@ -52,7 +52,7 @@
     <div class="col-12 col-sm-12">
         <div class="card card-accent-primary mb-4">
             <div class="card-header">
-                @lang('Categories')
+                @lang('Document Type')
             </div>
             <div class="card-body">
                 @if (session()->has('selected_documenttypes'))
@@ -96,7 +96,7 @@
     </div>
     @endif
 
-    @if (session()->has('selected_departments'))
+    @if (session()->has('selected_documenttypes'))
     <div class="col-12 col-sm-12">
         <div class="card card-accent-primary mb-4">
             <div class="card-header">
@@ -122,8 +122,8 @@
                         @endforeach
                     @endif
                 @else
-                    @if ($documenttypes->count())
-                    @foreach ($documenttypes as $documenttype)
+                    @if ($locations->count())
+                    @foreach ($locations as $location)
                         <div class="checkbox">
                             {{-- {{ html()->label(html()->checkbox('departments_select[]', old('departments_select') && in_array($department->name, old('departments_select')) ? true : false, $department->name)->id('department-'.$department->name) . ' ' . $department->name)->for('department-'.$department->name) }} --}}
                             {{ html()->label(

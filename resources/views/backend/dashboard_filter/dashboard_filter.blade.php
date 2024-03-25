@@ -1,76 +1,147 @@
-<form id="filter-form" method='get'>
-{{ csrf_field() }}
-<button type="submit">Filter</button>
-<div class="col-12 col-sm-12">
-    <div class="card card-accent-primary mb-4">
-        <div class="card-header">
-            @lang('Departments')
-        </div>
-        <div class="card-body">
-            @if ($departments->count())
-            @foreach($departments as $department)
-            <div class="checkbox">
-                {{ html()->label(html()->checkbox('departments[]', old('departments') && in_array($department->name, old('departments')) ? true : false, $department->name)->id('department-'.$department->id) . ' ' . $department->name)->for('department-'.$department->id) }}
+<form action="/dashboard-filter" method='GET'>
+    {{ csrf_field() }}
+    <div class="col-12 col-sm-12">
+        <button class="btn btn-primary mb-2 btn-block" type="submit" value="Search">Filter</button>
+        <div class="card card-accent-primary mb-4">
+            <div class="card-header">
+                @lang('Departments')
             </div>
-            @endforeach
-            @endif
+            <div class="card-body">
+                @if (session()->has('selected_departments'))
+                    <?php $selectedDepartments = session()->get('selected_departments'); ?>
+                    @if ($departments->count())
+                        @foreach ($departments as $department)
+                            <div class="checkbox">
+                                {{-- {{ html()->label(html()->checkbox('departments_select[]', old('departments_select') && in_array($department->name, old('departments_select')) ? true : false, $department->name)->id('department-'.$department->name) . ' ' . $department->name)->for('department-'.$department->name) }} --}}
+                                {{ html()->label(
+                                        html()->checkbox(
+                                                'departments_select[]',
+                                                in_array($department->name, $selectedDepartments) ? true : false,
+                                                $department->name,
+                                            )->id('department-' . $department->name) .
+                                            ' ' .
+                                            $department->name,
+                                    )->for('department-' . $department->name) }}
+                            </div>
+                        @endforeach
+                    @endif
+                @else
+                    @if ($departments->count())
+                    @foreach ($departments as $department)
+                        <div class="checkbox">
+                            {{-- {{ html()->label(html()->checkbox('departments_select[]', old('departments_select') && in_array($department->name, old('departments_select')) ? true : false, $department->name)->id('department-'.$department->name) . ' ' . $department->name)->for('department-'.$department->name) }} --}}
+                            {{ html()->label(
+                                    html()->checkbox(
+                                            'departments_select[]',
+                                            in_array($department->name, []) ? true : false,
+                                            $department->name,
+                                        )->id('department-' . $department->name) .
+                                        ' ' .
+                                        $department->name,
+                                )->for('department-' . $department->name) }}
+                        </div>
+                    @endforeach
+                    @endif
+                @endif
+            </div>
         </div>
     </div>
-</div>
 
-<div class="col-12 col-sm-12">
-    <div class="card card-accent-primary mb-4">
-        <div class="card-header">
-            @lang('Categories')
-        </div>
-        <div class="card-body">
-            @if ($documenttypes->count())
-            @foreach($documenttypes as $documenttype)
-            <div class="checkbox">
-                {{ html()->label(html()->checkbox('documenttypes[]', old('documenttypes') && in_array($documenttype->name, old('documenttypes')) ? true : false, $documenttype->name)->id('documenttype-'.$documenttype->id) . ' ' . $documenttype->name)->for('documenttype-'.$documenttype->id) }}
-            </div>
-            @endforeach
-            @endif
-        </div>
-    </div>
-</div>
 
-<div class="col-12 col-sm-12">
-    <div class="card card-accent-primary mb-4">
-        <div class="card-header">
-            @lang('Locations')
-        </div>
-        <div class="card-body">
-            @if ($locations->count())
-            @foreach($locations as $location)
-            <div class="checkbox">
-                {{ html()->label(html()->checkbox('locations[]', old('locations') && in_array($location->name, old('locations')) ? true : false, $location->name)->id('location-'.$location->name) . ' ' . $location->name)->for('location-'.$location->name) }}
+    @if (session()->has('selected_departments'))
+    <div class="col-12 col-sm-12">
+        <div class="card card-accent-primary mb-4">
+            <div class="card-header">
+                @lang('Categories')
             </div>
-            @endforeach
-            @endif
+            <div class="card-body">
+                @if (session()->has('selected_documenttypes'))
+                    <?php $selectedDocumenttypes = session()->get('selected_documenttypes'); ?>
+                    @if ($documenttypes->count())
+                        @foreach ($documenttypes as $documenttype)
+                            <div class="checkbox">
+                                {{-- {{ html()->label(html()->checkbox('documenttypes[]', old('documenttypes') && in_array($documenttype->name, old('documenttypes')) ? true : false, $documenttype->name)->id('documenttype-' . $documenttype->id) .' ' .$documenttype->name)->for('documenttype-' . $documenttype->id) }} --}}
+                                {{ html()->label(
+                                    html()->checkbox(
+                                            'documenttypes_select[]',
+                                            in_array($documenttype->name, $selectedDocumenttypes) ? true : false,
+                                            $documenttype->name,
+                                        )->id('documenttype-' . $documenttype->name) .
+                                        ' ' .
+                                        $documenttype->name,
+                                )->for('documenttype-' . $documenttype->name) }}
+                            </div>
+                        @endforeach
+                    @endif
+                @else
+                    @if ($documenttypes->count())
+                    @foreach ($documenttypes as $documenttype)
+                        <div class="checkbox">
+                            {{-- {{ html()->label(html()->checkbox('departments_select[]', old('departments_select') && in_array($department->name, old('departments_select')) ? true : false, $department->name)->id('department-'.$department->name) . ' ' . $department->name)->for('department-'.$department->name) }} --}}
+                            {{ html()->label(
+                                    html()->checkbox(
+                                            'documenttypes_select[]',
+                                            in_array($documenttype->name, []) ? true : false,
+                                            $documenttype->name,
+                                        )->id('documenttype-' . $documenttype->name) .
+                                        ' ' .
+                                        $documenttype->name,
+                                )->for('documenttype-' . $documenttype->name) }}
+                        </div>
+                    @endforeach
+                    @endif
+                @endif
+            </div>
         </div>
     </div>
-</div>
+    @endif
+
+    @if (session()->has('selected_documenttypes'))
+    <div class="col-12 col-sm-12">
+        <div class="card card-accent-primary mb-4">
+            <div class="card-header">
+                @lang('Locations')
+            </div>
+            <div class="card-body">
+                @if (session()->has('selected_locations'))
+                    <?php $selectedLocations = session()->get('selected_locations'); ?>
+                    @if ($locations->count())
+                        @foreach ($locations as $location)
+                            <div class="checkbox">
+                                {{-- {{ html()->label(html()->checkbox('documenttypes[]', old('documenttypes') && in_array($documenttype->name, old('documenttypes')) ? true : false, $documenttype->name)->id('documenttype-' . $documenttype->id) .' ' .$documenttype->name)->for('documenttype-' . $documenttype->id) }} --}}
+                                {{ html()->label(
+                                    html()->checkbox(
+                                            'locations_select[]',
+                                            in_array($location->name, $selectedLocations) ? true : false,
+                                            $location->name,
+                                        )->id('location-' . $location->name) .
+                                        ' ' .
+                                        $location->name,
+                                )->for('location-' . $location->name) }}
+                            </div>
+                        @endforeach
+                    @endif
+                @else
+                    @if ($documenttypes->count())
+                    @foreach ($documenttypes as $documenttype)
+                        <div class="checkbox">
+                            {{-- {{ html()->label(html()->checkbox('departments_select[]', old('departments_select') && in_array($department->name, old('departments_select')) ? true : false, $department->name)->id('department-'.$department->name) . ' ' . $department->name)->for('department-'.$department->name) }} --}}
+                            {{ html()->label(
+                                    html()->checkbox(
+                                            'locations_select[]',
+                                            in_array($location->name, []) ? true : false,
+                                            $location->name,
+                                        )->id('location-' . $location->name) .
+                                        ' ' .
+                                        $location->name,
+                                )->for('location-' . $location->name) }}
+                        </div>
+                    @endforeach
+                    @endif
+                @endif
+            </div>
+        </div>
+    </div>
+    @endif
+
 </form>
-
-<script>
-document.getElementById('filter-form').addEventListener('submit', function(event) {
-    event.preventDefault();
-
-    // Get the form data
-    var formData = new FormData(this);
-
-    // Send the form data to the server
-    fetch('{{ url("dashboard-filter") }}', {
-        method: 'POST',
-        body: formData
-    })
-    .then(function(response) {
-        return response.json();
-    })
-    .then(function(data) {
-        // Update the page with the filtered data
-        console.log(data);
-    });
-});
-</script>
