@@ -552,6 +552,13 @@ class DocumentsController extends BackendBaseController
 
             $$module_name_singular->update($request->all());
 
+            if ($request->file) {
+                $fileName = time().'.'.$request->file->extension();
+                $request->file->move(public_path('uploads'), $fileName);
+                $$module_name_singular->file = $fileName;
+                $$module_name_singular->save();
+            }
+
             flash(icon().' '.Str::singular($module_title)."' Update Successfully")->success()->important();
 
             logUserAccess($module_title.' '.$module_action.' | Id: '.$$module_name_singular->id);
@@ -641,6 +648,26 @@ class DocumentsController extends BackendBaseController
             $schedule->save();
 
             $$module_name_singular->update($request->all());
+
+            $reminder_gap = Carbon::now()->diffInDays($validatedData['expiration_date']);
+            $today = Carbon::now();
+            if($reminder_gap < $validatedData['reminder_day'] ) {
+                $status = 2;
+            } elseif($validatedData['expiration_date'] <  $today) {
+                $status = 4;
+            } else{
+                $status = 1;
+            }
+
+            $$module_name_singular->status = $status;
+            $$module_name_singular->save();
+
+            if ($request->file) {
+                $fileName = time().'.'.$request->file->extension();
+                $request->file->move(public_path('uploads'), $fileName);
+                $$module_name_singular->file = $fileName;
+                $$module_name_singular->save();
+            }
 
             flash(icon().' '.Str::singular($module_title)."' Renew Successfully")->success()->important();
 
@@ -766,7 +793,7 @@ class DocumentsController extends BackendBaseController
      * @param  Request  $request
      * @return Response
      */
-    public function progress_document(Request $request)
+    public function progress_document($id)
     {
 
         $module_title = $this->module_title;
@@ -779,23 +806,20 @@ class DocumentsController extends BackendBaseController
         try {
             DB::beginTransaction();
 
-            // Buat penugasan PIC
-            foreach ($request->pic_list as $userPicId) {
-                SchedulePic::create([
-                    'document_schedule_id' => $request->document_shcedule_id,
-                    'user_pic_id' => $userPicId,
-                ]);
-            }
+            $$module_name_singular = $module_model::findOrFail($id);
+            $$module_name_singular->status = 3;
+            $$module_name_singular->save();
+
 
             DB::commit();
             // Berikan respons sukses
-            Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' PIC Assign")->important();
-            Log::info(label_case("Assign Document PIC")." | '' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            Flash::success("<i class='fas fa-check'></i> Progress '".Str::singular($module_title)."' Success")->important();
+            Log::info(label_case("Progress Document")." | '' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect()->back();
             // Berikan respons sukses
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error(label_case("Assign Document PIC")." | Error Creating Assign PIC Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
+            Log::error(label_case("Assign Document PIC")." | Error Progress Document by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
             return redirect()->back()->withErrors($e->getMessage())->withInput($request->all());
         }
 

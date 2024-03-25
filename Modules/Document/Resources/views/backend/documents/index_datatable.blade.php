@@ -155,6 +155,7 @@
             {
                 data: 'status',
                 searchable: true,
+                orderable: true,
                 name: 'status',
             },
             {
@@ -170,6 +171,7 @@
             {
                 data: 'schedule_date',
                 searchable: false,
+                orderable: false,
                 name: 'schedule_date'
             },
             {

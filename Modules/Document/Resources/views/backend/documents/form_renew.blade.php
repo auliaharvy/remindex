@@ -81,6 +81,20 @@
         </div>
     </div>
 </div>
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="form-group">
+            <?php
+            $field_name = 'file';
+            $field_lable = label_case($field_name);
+            $field_placeholder = "Upload File";
+            $required = "";
+            ?>
+            {{ html()->label($field_lable, $field_name)->class('form-label') }} {!! fielf_required($required) !!}
+            {{ html()->input("file", $field_name)->class('form-control')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
 
 <!-- Select2 Library -->
 <x-library.select2 />

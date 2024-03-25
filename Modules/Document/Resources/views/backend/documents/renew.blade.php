@@ -29,7 +29,7 @@
 
         <div class="row mt-4">
             <div class="col">
-                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.renew.update", $$module_name_singular))->class('form')->open() }}
+                {{ html()->modelForm($$module_name_singular, 'PATCH', route("backend.$module_name.renew.update", $$module_name_singular))->class('form')->acceptsFiles()->open() }}
 
                 @include ("document::backend.$module_name.form_renew")
 
