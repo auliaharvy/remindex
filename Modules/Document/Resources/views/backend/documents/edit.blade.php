@@ -105,6 +105,22 @@
                     <div class="col-6">
                         <div class="form-group">
                             <?php
+                            $field_name = 'admin_id';
+                            $field_lable = label_case("Admin");
+                            $field_relation = "admin";
+                            $field_placeholder = __("Select an option");
+                            $required = "required";
+                            ?>
+                            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+                            {{ html()->select($field_name, $users  )->placeholder($field_placeholder)->class('form-control')->attributes(["$required"]) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <div class="form-group">
+                            <?php
                             $field_name = 'department_id';
                             $field_lable = label_case("Department");
                             $field_relation = "department";

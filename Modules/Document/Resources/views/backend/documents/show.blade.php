@@ -40,7 +40,7 @@
                     <a href="{{route('backend.documents.progress', $$module_name_singular->id)}}" class="btn btn-success btn-sm mt-1 text-white" data-method="POST" data-token="{{csrf_token()}}" data-toggle="tooltip" title="Progress Document" data-confirm="Are you sure?"><i class="fas fa-check"></i></a>
                     @endif
 
-                    @if ($$module_name_singular->created_by == auth()->user()->id || $$module_name_singular->user_id == auth()->user()->id)
+                    @if ($$module_name_singular->created_by == auth()->user()->id || $$module_name_singular->user_id == auth()->user()->id || $$module_name_singular->admin_id == auth()->user()->id)
                     @can('delete_'.$module_name)
                     <a href='{{route("backend.$module_name.destroy", $$module_name_singular)}}' class="btn btn-danger btn-sm mt-1 text-white" data-method="DELETE" data-token="{{csrf_token()}}" data-toggle="tooltip" title="{{__('labels.backend.delete')}}"><i class="fas fa-trash-alt"></i></a>
                     @endcan
@@ -184,7 +184,7 @@
                 <div class="row">
                     <div class="col-12 col-sm-6 mb-3">
                         <h4>PIC List</h4>
-                        @if ($$module_name_singular->created_by == auth()->user()->id)
+                        @if ($$module_name_singular->created_by == auth()->user()->id || $$module_name_singular->admin_id == auth()->user()->id || $$module_name_singular->user_id == auth()->user()->id)
                         <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#myModal"><i
                                 class="fa fa-plus"></i></button>
                         @endif

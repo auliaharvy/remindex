@@ -1,0 +1,54 @@
+gitlab access token : glpat-qTABJMA1-e8KjUabUK6R | glpat-6gx3A_bfE9XsvZ2iGhwy
+
+
+PJAP SSH DO
+sudo ssh -i pjap-dev-app.pem root@157.230.242.107
+
+
+TTHC SSH DO
+ssh -i TTHC-DEV-APP.pem root@143.198.218.170
+ssh -i TTHC-DEV-APP.pem tthc@tthc.laporpajak.com
+ssh -i TTHC-DEV-APP.pem tthc@143.198.80.133
+
+
+
+46174
+
+CREATE TABLE public.mst_distributors (
+	id bigint NOT NULL GENERATED ALWAYS AS IDENTITY,
+	code varchar(100) NULL,
+	"name" varchar(100) NULL,
+	created_at timestamp NULL,
+	updated_at timestamp NULL
+);
+
+MOBILE BACKEEND SERVICE
+https://gitlab.com/taxologis/sites-service-api-gateway.git
+https://gitlab.com/taxologis/sites-service-ref-data.git
+https://gitlab.com/taxologis/sites-service-npwp-registration.git
+https://gitlab.com/taxologis/sites-service-lapor-spt.git
+https://gitlab.com/taxologis/sites-service-user-management.git
+https://gitlab.com/taxologis/sites-service-billing.git
+Token: 	
+
+
+AIzaSyB68QhuKRliNgJWMuxffwKjLGmKCgXErBU
+
+
+Akun Root AWS:
+UI: corporate@pajak.com
+PW: CorporateTPS123
+
+Akun sebelumnya ganti password
+email: corporate@laporpajak.com
+pass: LAPORPAJAK321
+
+Akun YouTube:
+email: taxologisprimasaga@gmail.com
+pass: LAPORPAJAK321
+
+
+Portioner pajak.app
+https://pajak.app:9443
+User : Aulia
+Pass : 1q2w3e4r5t6y

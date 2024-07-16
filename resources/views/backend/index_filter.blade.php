@@ -18,7 +18,7 @@
                 <h4 class="card-title mb-10">@lang("Dashboard Expiration Forecast")</h4>
                 <!-- Dashboard Content Area -->
                 <div class="card-text ma-10">
-                    @include("backend.dashboard_filter.dashboard_forecast", ['forecast_data', $grouped_forecast_data])
+                    @include("backend.dashboard_filter.dashboard_forecast", ['forecast_data', $final_grouped_forecast_data])
                 </div>
                 <!-- / Dashboard Content Area -->
             </div>

@@ -20,7 +20,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($grouped_forecast_data as $year => $months)
+            @foreach($final_grouped_forecast_data as $year => $months)
             @php
                 $total_all_months = 0;
                 foreach ($months as $month) {
@@ -39,7 +39,7 @@
                             @if($month['month'] == $i)
                                 @php
                                     $found = true;
-                                    $total_documents = $month['total_documents'];
+                                    $total_documents += $month['total_documents'];
                                 @endphp
                                 @break
                             @endif

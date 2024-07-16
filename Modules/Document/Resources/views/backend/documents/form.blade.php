@@ -73,6 +73,22 @@
     <div class="col-6">
         <div class="form-group">
             <?php
+            $field_name = 'admin_id';
+            $field_lable = label_case("Admin");
+            $field_relation = "admin_id";
+            $field_placeholder = $field_lable;
+            $required = "required";
+            ?>
+            {{ html()->label($field_lable, $field_name) }} {!! fielf_required($required) !!}
+            {{ html()->select($field_name, isset($$module_name_singular)?optional($$module_name_singular->$user_id):'')->placeholder($field_placeholder)->class('form-control select2-users')->attributes(["$required"]) }}
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12">
+        <div class="form-group">
+            <?php
             $field_name = 'department_id';
             $field_lable = label_case("Department");
             $field_relation = "department_id";

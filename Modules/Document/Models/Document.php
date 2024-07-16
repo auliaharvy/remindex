@@ -83,6 +83,25 @@ class Document extends BaseModel
         }
     }
 
+    public function admin()
+    {
+        return $this->belongsTo('App\Models\User');
+    }
+
+    public function setAdminIdAttribute($value)
+    {
+        $this->attributes['admin_id'] = $value;
+
+        try {
+            $user = User::findOrFail($value);
+            $this->attributes['admin_name'] = $user->name;
+            $this->attributes['admin_email'] = $user->email;
+        } catch (\Exception $e) {
+            $this->attributes['admin_name'] = null;
+            $this->attributes['admin_email'] = null;
+        }
+    }
+
     public function document_schedules()
     {
         return $this->hasMany('App\Models\DocumentSchedule');

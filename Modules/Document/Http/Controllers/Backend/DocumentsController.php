@@ -146,6 +146,7 @@ class DocumentsController extends BackendBaseController
             ->leftJoin('document_schedules', 'documents.id', '=', 'document_schedules.document_id')
             ->leftJoin('schedule_pics', 'document_schedules.id', '=', 'schedule_pics.document_schedule_id')
             ->orWhere('documents.user_id', auth()->id())
+            ->orWhere('documents.admin_id', auth()->id())
             ->orWhere('schedule_pics.user_pic_id', auth()->id())
             ->where('documents.deleted_at', null)
             ->where('documents.is_expired',0);
@@ -295,6 +296,7 @@ class DocumentsController extends BackendBaseController
                     'reminder_repeat' => 'required|integer',
                     'reminder_interval' => 'required|integer',
                     'user_id' => 'required|string',
+                    'admin_id' => 'required|string',
                     'pic_list' => 'nullable|array',
                     // 'file' => 'nullable|string',
                     'location' => 'nullable|string',
@@ -320,6 +322,7 @@ class DocumentsController extends BackendBaseController
                 // Buat dokumen baru
                 $document = Document::create([
                     'user_id' => $validatedData['user_id'],
+                    'admin_id' => $validatedData['admin_id'],
                     'document_type_id' => $validatedData['document_type_id'],
                     'department_id' => $validatedData['department_id'],
                     // 'file' => $validatedData['file'],
@@ -350,25 +353,13 @@ class DocumentsController extends BackendBaseController
                     'next_reminder' => $nextRemindAt,
                 ]);
 
-                $user = User::where('id', '=', $validatedData['user_id'])->first();
-                // Mail::to($user)
-                // ->send(new NewUserDocumentCreated($document));
-
-                $user->notify(new NewUserDocumentCreated($document, $schedule));
+                
                 // $user->sendEmailVerificationNotification();
                 // $user = auth()->user();
                 // $user->notify(new NewUserDocumentCreated($document));
                 // auth()->user()->notify(new NewCommentAdded('Comment'));
 
-                // Buat penugasan PIC
-                foreach ($validatedData['pic_list'] as $userPicId) {
-                    SchedulePic::create([
-                        'document_schedule_id' => $schedule->id,
-                        'user_pic_id' => $userPicId,
-                    ]);
-                    $userPic = User::where('id', '=', $userPicId)->first();
-                    $userPic->notify(new NewUserDocumentCreated($document, $schedule));
-                }
+                
             } else {
                 // Validasi input
                 $validatedData = $request->validate([
@@ -377,6 +368,7 @@ class DocumentsController extends BackendBaseController
                     'department_id' => 'required|exists:departments,id',
                     'description' => 'nullable|string',
                     'user_id' => 'required|string',
+                    'admin_id' => 'required|string',
                     'file' => 'nullable|string',
                     'location' => 'nullable|string',
                     'source' => 'nullable|string',
@@ -391,6 +383,7 @@ class DocumentsController extends BackendBaseController
                 // Buat dokumen baru
                 $document = Document::create([
                     'user_id' => $validatedData['user_id'],
+                    'admin_id' => $validatedData['admin_id'],
                     'document_type_id' => $validatedData['document_type_id'],
                     'department_id' => $validatedData['department_id'],
                     // 'file' => $validatedData['file'],
@@ -404,8 +397,10 @@ class DocumentsController extends BackendBaseController
                     'status' => 5,
                 ]);
 
-                $user = User::where('id', '=', $validatedData['user_id'])->first();
-                $user->notify(new NewUserDocumentCreatedWithoutSchedule($document));
+                // $user = User::where('id', '=', $validatedData['user_id'])->first();
+                // $admin = User::where('id', '=', $validatedData['admin_id'])->first();
+                // $user->notify(new NewUserDocumentCreatedWithoutSchedule($document));
+                // $admin->notify(new NewUserDocumentCreatedWithoutSchedule($document));
             }
 
             if ($request->file) {
@@ -415,7 +410,27 @@ class DocumentsController extends BackendBaseController
                 $document->save();
             }
 
-
+            if($request->expiration_date){
+                $user = User::where('id', '=', $validatedData['user_id'])->first();
+                $admin = User::where('id', '=', $validatedData['admin_id'])->first();
+                $user->notify(new NewUserDocumentCreated($document, $schedule));
+                $admin->notify(new NewUserDocumentCreated($document, $schedule));
+                // Buat penugasan PIC
+                foreach ($validatedData['pic_list'] as $userPicId) {
+                    SchedulePic::create([
+                        'document_schedule_id' => $schedule->id,
+                        'user_pic_id' => $userPicId,
+                    ]);
+                    $userPic = User::where('id', '=', $userPicId)->first();
+                    $userPic->notify(new NewUserDocumentCreated($document, $schedule));
+                }
+            } else {
+                $user = User::where('id', '=', $validatedData['user_id'])->first();
+                $admin = User::where('id', '=', $validatedData['admin_id'])->first();
+                $user->notify(new NewUserDocumentCreatedWithoutSchedule($document));
+                $admin->notify(new NewUserDocumentCreatedWithoutSchedule($document));
+            }
+            
             DB::commit();
             // Berikan respons sukses
             Flash::success("<i class='fas fa-check'></i> New '".Str::singular($module_title)."' Added")->important();
@@ -913,10 +928,29 @@ class DocumentsController extends BackendBaseController
 
 
             DB::commit();
+            $message = "<i class='fas fa-check'></i> Import '" . Str::singular($module_title) . "' Success with " . session('successCount') . " rows, " . session('failureCount') . " failed";
+
+            if (session('errors')) {
+                $message .= "<br>Errors: <ul>";
+                foreach (session('errors') as $error) {
+                    $message .= "<li>$error</li>";
+                }
+                $message .= "</ul>";
+            }
+
             // Berikan respons sukses
-            Flash::success("<i class='fas fa-check'></i> Import '".Str::singular($module_title)."' Success")->important();
-            Log::info(label_case($module_title.' '.$module_action)." | '".$$module_name_singular->name.'(ID:'.$$module_name_singular->id.") ' by User:".Auth::user()->name.'(ID:'.Auth::user()->id.')');
-            return redirect("admin/{$module_name}");
+            Flash::success($message)->important();
+            Log::info(label_case($module_title . ' ' . $module_action) ." | Success Import Document by User:". Auth::user()->name . '(ID:' . Auth::user()->id . ')');
+            // return redirect("admin/{$module_name}");
+            // return redirect()->back();
+            $$module_name = $module_model::simplePaginate(15);
+
+            // logUserAccess($module_title.' '.$module_action);
+
+            return view(
+                "{$module_path}.{$module_name}.index_datatable",
+                compact('module_title', 'module_name', "{$module_name}", 'module_icon', 'module_name_singular', 'module_action')
+            );
             // Berikan respons sukses
         } catch (\Exception $e) {
             DB::rollBack();
